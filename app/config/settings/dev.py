@@ -3,6 +3,12 @@ DEBUG = True
 
 secrets = json.load(open(os.path.join(SECRET_DIR, 'dev.json')))
 
+ALLOWED_HOSTS = [
+    'localhost',
+    '127.0.0.1',
+]
+
+
 # Database
 # https://docs.djangoproject.com/en/2.1/ref/settings/#databases
 

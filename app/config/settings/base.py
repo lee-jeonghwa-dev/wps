@@ -28,10 +28,6 @@ secrets = json.load(open(os.path.join(SECRET_DIR, 'base.json')))
 SECRET_KEY = secrets['SECRET_KEY']
 
 
-ALLOWED_HOSTS = [
-    'localhost',
-    '127.0.0.1',
-]
 
 
 # Application definition
