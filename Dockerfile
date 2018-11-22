@@ -7,7 +7,7 @@ RUN     apt -y dist-upgrade
 RUN     apt -y install python3-pip
 
 # Nginx, uWSGI 설치 (Webserver, WSGI)
-RUN     apt -y install nginx
+RUN     apt -y install nginx supervisor
 RUN     pip3 install uwsgi
 
 # docker build할때의 PATH해 해당하는 폴더의 전체 내용을
@@ -31,6 +31,9 @@ RUN         cp -f   /srv/project/.config/app.nginx \
 RUN         ln -sf  /etc/nginx/sites-available/app.nginx \
                     /etc/nginx/sites-enabled/app.nginx
 
-# 프로세스를 실행할 명령
-WORKDIR     /srv/project/app
-#RUN         python3 manage.py runserver
+# supervisord설정 파일 복사
+RUN         cp -f   /srv/project/.config/supervisord.conf \
+                    /etc/supervisor/conf.d/
+
+# Command로 supervisord 실행
+CMD         supervisord -n
