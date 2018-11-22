@@ -35,5 +35,6 @@ RUN         ln -sf  /etc/nginx/sites-available/app.nginx \
 RUN         cp -f   /srv/project/.config/supervisord.conf \
                     /etc/supervisor/conf.d/
 
+EXPOSE  80
 # Command로 supervisord 실행
 CMD         supervisord -n
