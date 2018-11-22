@@ -1,5 +1,5 @@
 from .base import *
-DEBUG = True
+DEBUG = False
 
 secrets = json.load(open(os.path.join(SECRET_DIR, 'production.json')))
 ALLOWED_HOSTS = [
