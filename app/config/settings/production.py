@@ -1,9 +1,10 @@
 from .base import *
-DEBUG = False
+DEBUG = True
 
 secrets = json.load(open(os.path.join(SECRET_DIR, 'production.json')))
 ALLOWED_HOSTS = [
     '.elasticbeanstalk.com',
+    'localhost',
 ]
 
 # Database
