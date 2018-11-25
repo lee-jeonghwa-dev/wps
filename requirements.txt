@@ -60,6 +60,7 @@ requests==2.18.4
 s3transfer==0.1.13
 semantic-version==2.5.0
 Send2Trash==1.5.0
+sentry-sdk==0.5.5
 six==1.11.0
 termcolor==1.1.0
 terminado==0.8.1
