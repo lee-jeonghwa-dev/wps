@@ -40,6 +40,7 @@ class ItemImage(models.Model):
         ('T', 'thumbnail'),
         ('D', 'detail'),
     )
+    image_order = models.IntegerField()
     photo_type = models.CharField(max_length=1, choices=PHOTO_TYPE_CHOICES)
 
 
