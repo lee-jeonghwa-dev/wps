@@ -37,6 +37,7 @@ class ItemImage(models.Model):
     PHOTO_TYPE_CHOICES = (
         ('T', 'thumbnail'),
         ('D', 'detail'),
+        ('L', 'list_thumbnail')
     )
 
     photo_type = models.CharField(max_length=1, choices=PHOTO_TYPE_CHOICES)
@@ -53,6 +54,13 @@ class Description(models.Model):
         on_delete=models.CASCADE,
 
     )
+    # 상세페이지에서 짧게 붙는 설명
+    added_words = models.CharField(max_length=200)
+    point = models.IntegerField(default=0)
+    delivery_type = models.CharField(max_length=200)
+    receive_day = models.CharField(max_length=100)
+
+    # 상품정보고시 내용
     item_type = models.CharField(max_length=50)
     factory_address = models.TextField()
     dom = models.CharField(max_length=50)
