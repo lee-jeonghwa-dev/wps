@@ -33,14 +33,34 @@ class ItemImage(models.Model):
         Item,
         on_delete=models.CASCADE,
     )
-    photo = models.ImageField(
-        upload_to='ItemImage',
-    )
+
     PHOTO_TYPE_CHOICES = (
         ('T', 'thumbnail'),
         ('D', 'detail'),
     )
-    image_order = models.IntegerField()
+
     photo_type = models.CharField(max_length=1, choices=PHOTO_TYPE_CHOICES)
+    image_order = models.IntegerField()
+
+    photo = models.ImageField(
+        upload_to='ItemImage',
+    )
+
+
+class Description(models.Model):
+    item = models.OneToOneField(
+        Item,
+        on_delete=models.CASCADE,
+
+    )
+    item_type = models.CharField(max_length=50)
+    factory_address = models.TextField()
+    dom = models.CharField(max_length=50)
+    capacity = models.CharField(max_length=30)
+    ingredient = models.TextField()
+    allergy_material = models.TextField()
+    caution = models.TextField()
+
+
 
 
