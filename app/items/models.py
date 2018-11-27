@@ -23,6 +23,9 @@ class Item(models.Model):
 class Category(models.Model):
     main_category = models.CharField(max_length=30)
     sub_category = models.CharField(max_length=30)
+    photo = models.ImageField(
+        upload_to='Category',
+    )
 
     def __str__(self):
         return f'{self.main_category}/{self.sub_category}'
