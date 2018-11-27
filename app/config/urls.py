@@ -28,7 +28,7 @@ import members
 
 urlpatterns_api = ([
     path('categories/', items_apis.CategoryList.as_view()),
-    # path('items/<int:categories_pk>/', items_apis.ItemList.as_view()),
+    path('items/<int:categories_pk>/', items_apis.ItemList.as_view()),
 ], 'api')
 
 urlpatterns = [
