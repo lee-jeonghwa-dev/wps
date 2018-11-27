@@ -48,6 +48,7 @@ class ItemImage(models.Model):
 
     photo = models.ImageField(
         upload_to='ItemImage',
+        max_length=300,
     )
 
 
