@@ -55,7 +55,7 @@ class Description(models.Model):
 
     )
     # 상세페이지에서 짧게 붙는 설명
-    added_words = models.CharField(max_length=200)
+    added_words = models.CharField(max_length=200, null=True, blank=True)
     point = models.IntegerField(default=0)
     delivery_type = models.CharField(max_length=200)
     receive_day = models.CharField(max_length=100)
