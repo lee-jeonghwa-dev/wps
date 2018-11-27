@@ -34,6 +34,7 @@ SECRET_KEY = secrets['SECRET_KEY']
 
 INSTALLED_APPS = [
     'members.apps.MembersConfig',
+    'items.apps.ItemsConfig',
 
     'django.contrib.admin',
     'django.contrib.auth',
@@ -78,12 +79,12 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/2.1/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-    }
-}
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+#     }
+# }
 
 
 # Password validation

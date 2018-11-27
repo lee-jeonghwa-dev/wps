@@ -9,10 +9,19 @@ ALLOWED_HOSTS = [
 ]
 
 
+INSTALLED_APPS += ['django_extensions',]
+
+
 # Database
 # https://docs.djangoproject.com/en/2.1/ref/settings/#databases
 
-DATABASES = secrets['DATABASE']
+#DATABASES = secrets['DATABASE']
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+    }
+}
 
 DEFAULT_FILE_STORAGE = 'config.storages.MediaStorage'
 AWS_ACCESS_KEY_ID = secrets['AWS_ACCESS_KEY_ID']
