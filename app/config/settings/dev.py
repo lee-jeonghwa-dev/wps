@@ -9,8 +9,6 @@ ALLOWED_HOSTS = [
 ]
 
 
-INSTALLED_APPS += ['django_extensions',]
-
 
 # Database
 # https://docs.djangoproject.com/en/2.1/ref/settings/#databases
