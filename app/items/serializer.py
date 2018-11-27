@@ -14,8 +14,9 @@ class CategorySerializer(serializers.ModelSerializer):
         )
 
 
-# # 반찬 하나에 대한 내용 (list에 들어가는 내용)
-# class ItemsSerializer(serializers.ModelSerializer):
+# 반찬 List를 보여주는 page에 필요한 serializer
+# class ItemsListSerializer(serializers.ModelSerializer):
+#     list_thumbnail =
 #     class Meta:
 #         model = Item
 #         fields = (
@@ -27,5 +28,5 @@ class CategorySerializer(serializers.ModelSerializer):
 #             'discount_rate',
 #             'categories',
 #         )
-#
+
 

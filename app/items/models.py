@@ -41,7 +41,7 @@ class ItemImage(models.Model):
     )
 
     photo_type = models.CharField(max_length=1, choices=PHOTO_TYPE_CHOICES)
-    image_order = models.IntegerField()
+    image_order = models.IntegerField(default=1)
 
     photo = models.ImageField(
         upload_to='ItemImage',
@@ -59,15 +59,20 @@ class Description(models.Model):
     point = models.IntegerField(default=0)
     delivery_type = models.CharField(max_length=200)
     receive_day = models.CharField(max_length=100)
+    regular_delivery = models.BooleanField(default=False)
+
 
     # 상품정보고시 내용
     item_type = models.CharField(max_length=50)
     factory_address = models.TextField()
-    dom = models.CharField(max_length=50)
+    dom = models.CharField(max_length=100)
     capacity = models.CharField(max_length=30)
     ingredient = models.TextField()
     allergy_material = models.TextField()
     caution = models.TextField()
+
+    def __str__(self):
+        return f'[{self.item.company}]{self.item.item_name}'
 
 
 
