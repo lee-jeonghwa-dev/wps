@@ -11,6 +11,7 @@ class CategorySerializer(serializers.ModelSerializer):
             'pk',
             'main_category',
             'sub_category',
+            'photo',
         )
 
 

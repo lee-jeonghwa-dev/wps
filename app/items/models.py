@@ -52,6 +52,11 @@ class ItemImage(models.Model):
     )
 
 
+
+    def __str__(self):
+        return f'[{self.item.company}]{self.item.item_name}/{self.photo_type}-{self.image_order}'
+
+
 class Description(models.Model):
     item = models.OneToOneField(
         Item,
