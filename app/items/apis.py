@@ -11,7 +11,10 @@ class ItemList(APIView):
         try:
             category = Category.objects.get(pk=categories_pk)
         except Category.DoesNotExist:
-            return Response(status=status.HTTP_404_NOT_FOUND)
+            data = {
+                'error': '존재하지 않는 category입니다',
+            }
+            return Response(data=data, status=status.HTTP_404_NOT_FOUND)
         items = Item.objects.filter(categories=category)
         return Response(ItemsListSerializer(items, many=True).data)
 
@@ -28,6 +31,9 @@ class ItemDetail(APIView):
         try:
             item = Item.objects.get(pk=item_pk)
         except Item.DoesNotExist:
-            return Response(status=status.HTTP_404_NOT_FOUND)
+            data = {
+                'error': '존재하지 않는 item 입니다',
+            }
+            return Response(data=data, status=status.HTTP_404_NOT_FOUND)
 
         return Response(ItemDetailSerializer(item).data)

@@ -62,7 +62,7 @@ MIDDLEWARE = [
 CORS_ORIGIN_WHITELIST = (
     'google.com',
     'localhost:8000',
-    '127.0.0.1:8000'
+    '127.0.0.1:8000',
 )
 
 ROOT_URLCONF = 'config.urls'
