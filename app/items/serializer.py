@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import Item, Category, ItemImage
+from .models import Item, Category, ItemImage, Description
 
 
 # category 종류를 보여줌
@@ -15,32 +15,51 @@ class CategorySerializer(serializers.ModelSerializer):
         )
 
 
-# ListThumbnail (ItemImage 에서 type='L' 만 필요할 때 사용하는 serializer
-class ListThumbnailSerializer(serializers.ModelSerializer):
+# 반찬 List를 보여주는 page에 필요한 serializer
+class ItemsListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Item
+        fields = (
+            'pk',
+            'company',
+            'item_name',
+            'origin_price',
+            'sale_price',
+            'discount_rate',
+            'list_thumbnail',
+        )
+
+
+class ItemDescriptionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Description
+        fields = '__all__'
+
+
+class ItemImageSerializer(serializers.ModelSerializer):
     class Meta:
         model = ItemImage
-        fields = ('photo',)
+        fields = '__all__'
 
 
-# 반찬 List를 보여주는 page에 필요한 serializer
-class ItemsListSerializer(serializers.Serializer):
-    item_name = serializers.CharField(max_length=150)
-    company = serializers.CharField(max_length=50)
-    origin_price = serializers.IntegerField()
-    sale_price = serializers.IntegerField()
-    discount_rate = serializers.FloatField(default=0.0)
-    photo = serializers.ImageField()
+class ItemDetailSerializer(serializers.ModelSerializer):
+    description = ItemDescriptionSerializer()
+    itemimage_set = ItemImageSerializer(many=True)
 
-    def to_representation(self, instance):
-        data = {
-            'item_name': instance.item.item_name,
-            'company': instance.item.company,
-            'origin_price': instance.item.origin_price,
-            'sale_price': instance.item.sale_price,
-            'discount_rate': instance.item.discount_rate,
-            'photo': ListThumbnailSerializer(instance).data
-        }
-        return data
+    class Meta:
+        model = Item
+        fields = (
+            'pk',
+            'company',
+            'item_name',
+            'origin_price',
+            'sale_price',
+            'discount_rate',
+            'description',
+            'itemimage_set'
+        )
+
+
 
 
 

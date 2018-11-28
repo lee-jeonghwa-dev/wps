@@ -7,8 +7,12 @@ class Item(models.Model):
     origin_price = models.IntegerField()
     sale_price = models.IntegerField()
     discount_rate = models.FloatField(default=0.0)
+    list_thumbnail = models.ImageField(
+        upload_to='Item',
+    )
 
     categories = models.ManyToManyField('Category')
+
 
     def __str__(self):
         return f'[{self.company}]{self.item_name}/{self.origin_price}'
@@ -40,7 +44,6 @@ class ItemImage(models.Model):
     PHOTO_TYPE_CHOICES = (
         ('T', 'thumbnail'),
         ('D', 'detail'),
-        ('L', 'list_thumbnail')
     )
 
     photo_type = models.CharField(max_length=1, choices=PHOTO_TYPE_CHOICES)

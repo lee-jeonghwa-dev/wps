@@ -17,18 +17,20 @@ from django.contrib import admin
 from django.urls import path, include
 from items import apis as items_apis
 
-# api URL연결
-import members
 
-# urlpatterns_api = ([
-#     # path('posts/', include(urlpatterns_api_posts)),
-#     path('members/', include(members.urls)),
-# ], 'api')
+urlpatterns_api_item = ([
+    path('<int:item_pk>/', items_apis.ItemDetail.as_view()),
+], 'item')
 
+
+urlpatterns_api_categories = ([
+    path('', items_apis.CategoryList.as_view()),
+    path('<int:categories_pk>/', items_apis.ItemList.as_view()),
+], 'categories')
 
 urlpatterns_api = ([
-    path('categories/', items_apis.CategoryList.as_view()),
-    path('items/<int:categories_pk>/', items_apis.ItemList.as_view()),
+    path('categories/', include(urlpatterns_api_categories)),
+    path('item/', include(urlpatterns_api_item)),
 ], 'api')
 
 urlpatterns = [
