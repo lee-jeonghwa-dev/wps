@@ -22,11 +22,17 @@ class Basket(models.Model):
         blank=True,
     )
     amount = models.IntegerField(default=0)
-    # sale_price = models.IntegerField(default=0)
+    sale_price = models.IntegerField(default=0)
     order_yn = models.BooleanField(default=False)
 
     def __str__(self):
         return f'{self.user.username}/{self.item.item_name}/{self.amount}'
+
+    def save(self, *args, **kwargs):
+        if self.sale_price == 0:
+            self.sale_price = self.item.sale_price
+
+        super().save(*args, **kwargs)
 
 
 class Bill(models.Model):
@@ -38,5 +44,8 @@ class Bill(models.Model):
     address = models.TextField()
     delivery_date = models.DateField(null=True, blank=True)
 
+    class Meta:
+        ordering = ['order_date_time']
+
     def __str__(self):
-        return f'{self.user.username}/{self.order_date}'
+        return f'{self.user.username}/{self.order_date_time}'
