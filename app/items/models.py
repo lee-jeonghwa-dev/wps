@@ -54,8 +54,6 @@ class ItemImage(models.Model):
         max_length=300,
     )
 
-
-
     def __str__(self):
         return f'[{self.item.company}]{self.item.item_name}/{self.photo_type}-{self.image_order}'
 
@@ -72,7 +70,6 @@ class Description(models.Model):
     delivery_type = models.CharField(max_length=200)
     receive_day = models.CharField(max_length=100)
     regular_delivery = models.BooleanField(default=False)
-
 
     # 상품정보고시 내용
     item_type = models.CharField(max_length=50)
