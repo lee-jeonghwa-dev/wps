@@ -1,11 +1,13 @@
 from django.db import models
+from rest_framework import status
+from rest_framework.response import Response
 
 
 class Item(models.Model):
     item_name = models.CharField(max_length=150)
     company = models.CharField(max_length=50)
     origin_price = models.IntegerField()
-    sale_price = models.IntegerField()
+    sale_price = models.IntegerField(null=True, blank=True)
     discount_rate = models.FloatField(default=0.0)
     list_thumbnail = models.ImageField(
         upload_to='Item',
@@ -13,15 +15,17 @@ class Item(models.Model):
 
     categories = models.ManyToManyField('Category')
 
-
     def __str__(self):
         return f'[{self.company}]{self.item_name}/{self.origin_price}'
 
-    # def save(self, *args, **kwargs):
-    #     if not self.sale_price:
-    #         self.sale_price = self.origin_price
-    #
-    #     super.save(*args, **kwargs)
+    def save(self, *args, **kwargs):
+        if self.discount_rate >= 1 or self.discount_rate < 0:
+            self.discount_rate = 0
+            self.sale_price = self.origin_price * (1 - self.discount_rate)
+        if not self.sale_price:
+            self.sale_price = self.origin_price * (1-self.discount_rate)
+
+        super().save(*args, **kwargs)
 
 
 class Category(models.Model):
