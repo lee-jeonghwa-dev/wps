@@ -31,6 +31,7 @@ class SiteAuthTokenSerializer(serializers.Serializer):
     def validate(self, data):
         username = data['username']
         password = data['password']
+
         user = authenticate(username=username, password=password)
         if not user:
             raise AuthenticationFailed('아이디 또는 비밀번호가 올바르지 않습니다')
@@ -46,5 +47,28 @@ class SiteAuthTokenSerializer(serializers.Serializer):
         return data
 
 
-class SotialAuthTokenSerializer(serializers.Serializer):
-    pass
+class SocialAuthTokenSerializer(serializers.Serializer):
+    username = serializers.CharField()
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.user = None
+
+    def validate(self, data):
+        username = data['username']
+        # username에 맞는 user가 없으면 생성한다
+        try:
+            user = User.objects.get(username=username)
+        except User.DoesNotExist:
+            user = User.objects.create_user(username=username)
+        # user = User.objects.get_or_create(**data)[0]
+        self.user = user
+        return data
+
+    def to_representation(self, instance):
+        token = Token.objects.get_or_create(user=self.user)[0]
+        data = {
+            'user': UserSerializer(self.user).data,
+            'token': token.key,
+        }
+        return data
