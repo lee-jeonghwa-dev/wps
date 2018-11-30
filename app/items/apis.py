@@ -3,7 +3,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 
 from .models import Item, Category
-from .serializer import CategorySerializer, ItemsListSerializer, ItemDetailSerializer
+from .serializers import CategorySerializer, ItemsListSerializer, ItemDetailSerializer
 
 
 # 메인 화면에 카테고리들의 pk를 보내준다
