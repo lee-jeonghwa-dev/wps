@@ -19,12 +19,12 @@ from items import apis as items_apis
 
 
 urlpatterns_api_item = ([
-    path('', items_apis.ItemDetail.as_view()),
+    path('', items_apis.ItemDetailAPIView.as_view()),
 ], 'item')
 
 
 urlpatterns_api_categories = ([
-    path('', items_apis.CategoryItemList.as_view()),
+    path('', items_apis.CategoryItemListAPIView.as_view()),
 ], 'categories')
 
 urlpatterns_api = ([

@@ -7,7 +7,7 @@ from .serializer import CategorySerializer, ItemsListSerializer, ItemDetailSeria
 
 
 # 메인 화면에 카테고리들의 pk를 보내준다
-class CategoryItemList(APIView):
+class CategoryItemListAPIView(APIView):
     def get(self, request, format=None):
         if not request.query_params:
             # query_params가 비어있으면 Category List 보여주기
@@ -35,7 +35,7 @@ class CategoryItemList(APIView):
         return Response(ItemsListSerializer(items, many=True).data)
 
 
-class ItemDetail(APIView):
+class ItemDetailAPIView(APIView):
     def get(self, request, format=None):
         item_pk = request.query_params.get('pk')
 
