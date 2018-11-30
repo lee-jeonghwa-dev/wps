@@ -1,6 +1,4 @@
 from django.db import models
-from rest_framework import status
-from rest_framework.response import Response
 
 
 class Item(models.Model):
@@ -10,7 +8,7 @@ class Item(models.Model):
     sale_price = models.IntegerField(null=True, blank=True)
     discount_rate = models.FloatField(default=0.0)
     # 크롤링에 필요한 내용
-    ga_id = models.CharField(max_length=100, null=True, blank=True)
+    ga_id = models.CharField(max_length=100, null=True, blank=True, unique=True)
     list_thumbnail = models.ImageField(
         upload_to='Item',
     )
