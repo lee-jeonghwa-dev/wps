@@ -1,11 +1,13 @@
 from django.db import models
+from rest_framework import status
+from rest_framework.response import Response
 
 
 class Item(models.Model):
     item_name = models.CharField(max_length=150)
     company = models.CharField(max_length=50)
     origin_price = models.IntegerField()
-    sale_price = models.IntegerField()
+    sale_price = models.IntegerField(null=True, blank=True)
     discount_rate = models.FloatField(default=0.0)
     # 크롤링에 필요한 내용
     ga_id = models.CharField(max_length=100, null=True, blank=True)
@@ -15,15 +17,17 @@ class Item(models.Model):
 
     categories = models.ManyToManyField('Category')
 
-
     def __str__(self):
         return f'[{self.company}]{self.item_name}/{self.origin_price}'
 
-    # def save(self, *args, **kwargs):
-    #     if not self.sale_price:
-    #         self.sale_price = self.origin_price
-    #
-    #     super.save(*args, **kwargs)
+    def save(self, *args, **kwargs):
+        if self.discount_rate >= 1 or self.discount_rate < 0:
+            self.discount_rate = 0
+            self.sale_price = self.origin_price * (1 - self.discount_rate)
+        if not self.sale_price:
+            self.sale_price = self.origin_price * (1-self.discount_rate)
+
+        super().save(*args, **kwargs)
 
 
 class Category(models.Model):
@@ -56,8 +60,6 @@ class ItemImage(models.Model):
         max_length=300,
     )
 
-
-
     def __str__(self):
         return f'[{self.item.company}]{self.item.item_name}/{self.photo_type}-{self.image_order}'
 
@@ -74,7 +76,6 @@ class Description(models.Model):
     delivery_type = models.CharField(max_length=200)
     receive_day = models.CharField(max_length=100)
     regular_delivery = models.BooleanField(default=False)
-
 
     # 상품정보고시 내용
     item_type = models.CharField(max_length=50)

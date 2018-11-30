@@ -35,6 +35,7 @@ SECRET_KEY = secrets['SECRET_KEY']
 INSTALLED_APPS = [
     'members.apps.MembersConfig',
     'items.apps.ItemsConfig',
+    'bill.apps.BillConfig',
 
     'django.contrib.admin',
     'django.contrib.auth',
@@ -44,7 +45,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     'rest_framework',
-    'corsheaders'
+    'corsheaders',
 ]
 
 MIDDLEWARE = [

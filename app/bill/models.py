@@ -1,0 +1,51 @@
+from django.contrib.auth import get_user_model
+from django.db import models
+
+from items.models import Item
+
+User = get_user_model()
+
+
+class Basket(models.Model):
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+    )
+    item = models.ForeignKey(
+        Item,
+        on_delete=models.CASCADE,
+    )
+    order = models.ForeignKey(
+        'Bill',
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+    )
+    amount = models.IntegerField(default=0)
+    sale_price = models.IntegerField(null=True, blank=True)
+    order_yn = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f'{self.user.username}/{self.item.item_name}/{self.amount}'
+
+    def save(self, *args, **kwargs):
+        if not self.sale_price:
+            self.sale_price = self.item.sale_price
+
+        super().save(*args, **kwargs)
+
+
+class Bill(models.Model):
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+    )
+    order_date_time = models.DateTimeField(auto_now_add=True)
+    address = models.TextField()
+    delivery_date = models.DateField(null=True, blank=True)
+
+    class Meta:
+        ordering = ['order_date_time']
+
+    def __str__(self):
+        return f'{self.user.username}/{self.order_date_time}'
