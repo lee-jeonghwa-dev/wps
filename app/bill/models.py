@@ -22,17 +22,11 @@ class Basket(models.Model):
         blank=True,
     )
     amount = models.IntegerField(default=0)
-    sale_price = models.IntegerField(null=True, blank=True)
     order_yn = models.BooleanField(default=False)
+
 
     def __str__(self):
         return f'{self.user.username}/{self.item.item_name}/{self.amount}'
-
-    def save(self, *args, **kwargs):
-        if not self.sale_price:
-            self.sale_price = self.item.sale_price
-
-        super().save(*args, **kwargs)
 
 
 class Bill(models.Model):
