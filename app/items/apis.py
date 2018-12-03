@@ -11,7 +11,7 @@ class CategoryItemListAPIView(APIView):
     def get(self, request, format=None):
         if not request.query_params:
             # query_params가 비어있으면 Category List 보여주기
-            categories = Category.objects.all()
+            categories = Category.objects.order_by('pk')
             return Response(CategorySerializer(categories, many=True).data)
 
         # query_params에서 pk 값을 가져옴
