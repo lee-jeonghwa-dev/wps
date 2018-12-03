@@ -3,11 +3,17 @@ from django.urls import path, include
 from items import apis as items_apis
 from members import apis as members_apis
 
+
+urlpatterns_api_members_signup = ([
+    path('', members_apis.SiteSignUpAPIView.as_view()),
+    path('check-id/', members_apis.SignUpCheckIDView.as_view()),
+], 'signup')
+
+
 urlpatterns_api_members = ([
-    path('signup/', members_apis.SiteSignUpAPIView.as_view()),
+    path('signup/', include(urlpatterns_api_members_signup)),
     path('login/', members_apis.SiteAuthTokenAPIView.as_view()),
     path('social-login/', members_apis.SocialAuthTokenAPIView.as_view()),
-
 ], 'members')
 
 
