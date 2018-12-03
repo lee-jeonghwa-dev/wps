@@ -3,7 +3,7 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from .serializers import SiteAuthTokenSerializer, SocialAuthTokenSerializer
+from .serializers import SiteAuthTokenSerializer, SocialAuthTokenSerializer, SiteSigunUpSerializer
 from .serializers import UserSerializer
 
 User = get_user_model()
@@ -26,23 +26,10 @@ class SignUpCheckIDView(APIView):
 
 class SiteSignUpAPIView(APIView):
     def post(self, request, format=None):
-        username = request.POST.get('user_id')
-        password = request.POST.get('password')
-
-        if not (username and password):
-            data = {'error': 'user_id 또는 password값이 없습니다'}
-            return Response(data, status=status.HTTP_400_BAD_REQUEST)
-
-        if User.objects.filter(username=username).exists():
-            # 같은 ID가 존재함
-            data = {'error': '동일한 ID가 존재합니다'}
-            return Response(data, status=status.HTTP_400_BAD_REQUEST)
-
-        user = User.objects.create_user(username=username, password=password)
-        return Response(
-            data=UserSerializer(user).data,
-            status=status.HTTP_201_CREATED,
-        )
+        serializer = SiteSigunUpSerializer(data=request.data)
+        if serializer.is_valid():
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class SiteAuthTokenAPIView(APIView):
