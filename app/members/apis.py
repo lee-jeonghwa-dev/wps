@@ -11,9 +11,9 @@ User = get_user_model()
 
 class SignUpCheckIDView(APIView):
     def post(self, request, format=None):
-        username = request.POST.get('user_id')
+        username = request.POST.get('username')
         if not username:
-            data = {'error': 'user_id 값이 없습니다'}
+            data = {'error': 'username 값이 없습니다'}
             return Response(data, status=status.HTTP_400_BAD_REQUEST)
         user_exist = User.objects.filter(username=username).exists()
         if user_exist:
