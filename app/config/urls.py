@@ -2,11 +2,15 @@ from django.contrib import admin
 from django.urls import path, include
 from items import apis as items_apis
 from members import apis as members_apis
+from bill import apis as cart_apis
 
+urlpatterns_api_cart =([
+    path('', cart_apis.CreateChangeBasketItem.as_view()),
+], 'cart')
 
 urlpatterns_api_members_signup = ([
     path('', members_apis.SiteSignUpAPIView.as_view()),
-    path('check-id/', members_apis.SignUpCheckIDView.as_view()),
+    path('check-username/', members_apis.SignUpCheckIDView.as_view()),
 ], 'signup')
 
 
@@ -30,6 +34,7 @@ urlpatterns_api = ([
     path('categories/', include(urlpatterns_api_categories)),
     path('item/', include(urlpatterns_api_item)),
     path('members/', include(urlpatterns_api_members)),
+    path('cart/', include(urlpatterns_api_cart)),
 ], 'api')
 
 urlpatterns = [
