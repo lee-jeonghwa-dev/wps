@@ -18,9 +18,9 @@ class SignUpCheckIDView(APIView):
         user_exist = User.objects.filter(username=username).exists()
         if user_exist:
             # 같은 ID가 존재함
-            data = {'error': '동일한 ID가 존재합니다'}
+            data = {'error': '동일한 username이 존재합니다'}
         else:
-            data = {'pass': '사용가능한 ID입니다'}
+            data = {'pass': '사용가능한 username입니다'}
         return Response(data, status=status.HTTP_200_OK)
 
 
