@@ -4,7 +4,7 @@ from items import apis as items_apis
 from members import apis as members_apis
 from bill import apis as cart_apis
 
-urlpatterns_api_cart =([
+urlpatterns_api_cart = ([
     path('', cart_apis.CreateChangeBasketItem.as_view()),
 ], 'cart')
 
