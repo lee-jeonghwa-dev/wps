@@ -14,13 +14,16 @@ class CategoryItemListAPIView(APIView):
             categories = Category.objects.order_by('pk')
             return Response(CategorySerializer(categories, many=True).data)
 
+        ###################################################################
+        # category subcategory내용과 img, list들 보여주기
+
         # query_params에서 pk 값을 가져옴
-        categories_pk = request.query_params.get('pk')
+        categories_pk = request.query_params.get('category_pk')
 
         # pk로 보내지 않은 경우
         if not categories_pk:
             data = {
-                'error': 'parameter를 pk로 보내주세요',
+                'error': 'parameter를 category_pk로 보내주세요',
             }
             return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
 
@@ -31,18 +34,32 @@ class CategoryItemListAPIView(APIView):
                 'error': '존재하지 않는 category입니다',
             }
             return Response(data=data, status=status.HTTP_404_NOT_FOUND)
+
+        sub_cetegories = Category.objects.filter(main_category=category.main_category)
+
         items = Item.objects.filter(categories=category)
-        return Response(ItemsListSerializer(items, many=True).data)
+
+        if category.photo:
+            category_img = category.photo.url
+        else:
+            category_img = None
+
+        data = {
+            'category_img': category_img,
+            'sub_categories': CategorySerializer(sub_cetegories, many=True).data,
+            'item_list': ItemsListSerializer(items, many=True).data,
+        }
+        return Response(data, status=status.HTTP_200_OK)
 
 
 class ItemDetailAPIView(APIView):
     def get(self, request, format=None):
-        item_pk = request.query_params.get('pk')
+        item_pk = request.query_params.get('item_pk')
 
         # pk로 보내지 않은 경우
         if not item_pk:
             data = {
-                'error': 'parameter를 pk로 보내주세요, 또는 parameter를 보내지 않았습니',
+                'error': 'parameter를 item_pk로 보내주세요, 또는 parameter를 보내지 않았습니',
             }
             return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
 
@@ -55,3 +72,5 @@ class ItemDetailAPIView(APIView):
             return Response(data=data, status=status.HTTP_404_NOT_FOUND)
 
         return Response(ItemDetailSerializer(item).data)
+
+

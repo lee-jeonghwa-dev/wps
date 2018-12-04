@@ -7,16 +7,19 @@ User = get_user_model()
 
 
 class UserSerializer(serializers.ModelSerializer):
+    user_pk = serializers.CharField(source='pk')
+
     class Meta:
         model = User
         fields = (
-            'pk',
+            'user_pk',
             'username',
             'first_name',
             'last_name',
             'email',
             'img_profile',
         )
+
 
 class SiteSigunUpSerializer(serializers.Serializer):
     def __init__(self, *args, **kwargs):
