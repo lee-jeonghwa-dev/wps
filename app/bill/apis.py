@@ -5,14 +5,15 @@ from rest_framework import permissions, status, generics
 
 from items.models import Item
 from items.serializers import ItemsListSerializer
-from .models import Basket
-from .serializers import BasketSerializer
+from members.permission import IsUser
+from .models import Basket, Bill
+from .serializers import BasketSerializer, OrderSerializer
 from members.serializers import UserSerializer
 
 User = get_user_model()
 
 
-class CreateChangeBasketItem(APIView):
+class ListCreateBasketItemView(APIView):
     permission_classes = (
         permissions.IsAuthenticated,
     )
@@ -26,7 +27,7 @@ class CreateChangeBasketItem(APIView):
     def post(self, request):
         user = request.user
         try:
-            item = Item.objects.get(pk=request.POST['item_pk'])
+            item = Item.objects.get(pk=request.data.get('item_pk'))
         except Item.DoesNotExist:
             data = {'error': '존재하지 않는 item입니다'}
             return Response(data, status=status.HTTP_404_NOT_FOUND)
@@ -37,7 +38,7 @@ class CreateChangeBasketItem(APIView):
             }
             return Response(data, status=status.HTTP_400_BAD_REQUEST)
 
-        Basket.objects.create(user=user, item=item, amount=request.POST['amount'])
+        Basket.objects.create(user=user, item=item, amount=request.data.get('amount'))
         baskets = Basket.objects.filter(user=user, order_yn=False)
         serializer = BasketSerializer(baskets, many=True)
         return Response(data=serializer.data, status=status.HTTP_201_CREATED)
@@ -108,5 +109,26 @@ class CreateChangeBasketItem(APIView):
         basket.delete()
 
         return self.get(request)
+
+
+class OrderView(APIView):
+    permission_classes = (
+        permissions.IsAuthenticated,
+        # IsUser,
+    )
+
+    def get(self, request):
+        user = request.user
+        bills = Bill.objects.filter(user=user).order_by('-order_date_time')
+        serializer = OrderSerializer(bills, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def post(self, request):
+        user = request.user
+        a = request.data
+        pass
+        return Response({'test': 'test'})
+
+
 
 
