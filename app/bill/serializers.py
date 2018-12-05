@@ -26,9 +26,13 @@ class OrderSerializer(serializers.ModelSerializer):
             'order_pk',
             'user_pk',
             'order_date_time',
+            'delivery_date',
+            'total_price',
             'cart_items',
-
         )
+        read_only_fields = ('cart_items', 'order_pk')
+
+
 
 
 

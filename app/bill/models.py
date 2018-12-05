@@ -36,9 +36,10 @@ class Bill(models.Model):
     order_date_time = models.DateTimeField(auto_now_add=True)
     address = models.TextField()
     delivery_date = models.DateField(null=True, blank=True)
+    total_price = models.PositiveIntegerField(null=True, blank=True)
 
     class Meta:
-        ordering = ['order_date_time']
+        ordering = ['-order_date_time']
 
     def __str__(self):
         return f'{self.user.username}/{self.order_date_time}'

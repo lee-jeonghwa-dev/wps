@@ -111,6 +111,34 @@ class OrderView(APIView):
 
     def post(self, request):
         user = request.user
-        a = request.data
-        pass
-        return Response({'test': 'test'})
+        address = request.data.get('address')
+        delivery_date = request.data.get('delivery_date')
+        order_item_list = request.data.get('order_item_list')
+        total_price = request.data.get('total_price')
+        try:
+            bill = Bill.objects.create(
+                user=user,
+                address=address,
+                delivery_date=delivery_date,
+                total_price=total_price
+            )
+        except Bill.DoesNotExist:
+            data ={
+                'error': '입력한 조건으로 주문이 불가능 합니다'
+            }
+            return Response(data, status=status.HTTP_400_BAD_REQUEST)
+
+        for order_item in order_item_list:
+            cart_item_pk = order_item['cart_item_pk']
+            try:
+                order_item = Basket.objects.get(pk=cart_item_pk, user=user, order_yn=False)
+            except Basket.DoesNotExist:
+                data = {
+                    'error': '장바구니에 존재하지 않는 item을 주문하려고 합니다'
+                }
+                return Response(data, status=status.HTTP_400_BAD_REQUEST)
+
+            order_item.order = bill
+            order_item.order_yn = True
+            order_item.save()
+        return Response(OrderSerializer(bill).data, status=status.HTTP_200_OK)
