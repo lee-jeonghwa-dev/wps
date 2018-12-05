@@ -4,8 +4,19 @@ from items import apis as items_apis
 from members import apis as members_apis
 from bill import apis as cart_apis
 
+<<<<<<< Updated upstream
 urlpatterns_api_cart =([
     path('', cart_apis.CreateChangeBasketItem.as_view()),
+=======
+
+urlpatterns_api_order = ([
+    path('', cart_apis.OrderView.as_view()),
+], 'order')
+
+
+urlpatterns_api_cart = ([
+    path('', cart_apis.BasketItemView.as_view()),
+>>>>>>> Stashed changes
 ], 'cart')
 
 urlpatterns_api_members_signup = ([
