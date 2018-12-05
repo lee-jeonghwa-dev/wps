@@ -46,25 +46,17 @@ class ListCreateBasketItemView(APIView):
     def patch(self, request):
         user = request.user
         try:
-            item = Item.objects.get(pk=request.POST['item_pk'])
-        except Item.DoesNotExist:
-            data = {'error': '존재하지 않는 item입니다'}
+            cart_item = Basket.objects.get(pk=request.data.get('cart_item_pk'), user=user, order_yn=False)
+        except Basket.DoesNotExist:
+            data = {'error': '존재하지 않는 장바구니 속성입니다'}
             return Response(data, status=status.HTTP_404_NOT_FOUND)
-        add_amount = request.POST.get('add_amount')
-        amount = request.POST.get('amount')
+        add_amount = request.data.get('add_amount')
+        amount = request.data.get('amount')
 
         if add_amount:
             add_amount = int(add_amount)
         if amount:
             amount = int(amount)
-
-        if not Basket.objects.filter(user=user, item=item, order_yn=False).exists():
-            data = {
-                'error': '아직 장바구니에 없는 item입니다. post를 이용해주세요'
-            }
-            return Response(data, status=status.HTTP_400_BAD_REQUEST)
-
-        basket = Basket.objects.get(user=user, item=item, order_yn=False)
 
         # 예외사항 check
         if add_amount and amount:
@@ -73,40 +65,34 @@ class ListCreateBasketItemView(APIView):
         if not add_amount and not amount:
             data = {'error': 'add_amount, amount 모두 없습니다'}
             return Response(data, status=status.HTTP_400_BAD_REQUEST)
-        if basket.amount == amount or add_amount == 0:
+        if cart_item.amount == amount or add_amount == 0:
             data = {'error': 'amount에 변화가 없습니다'}
             return Response(data, status=status.HTTP_400_BAD_REQUEST)
 
         if add_amount:
-            if basket.amount + add_amount <= 0:
+            if cart_item.amount + add_amount <= 0:
                 data = {'error': 'amount가 0 또는 음수입니다'}
                 return Response(data, status=status.HTTP_400_BAD_REQUEST)
-            basket.amount += add_amount
+            cart_item.amount += add_amount
 
         if amount:
             if amount <= 0:
                 data = {'error': 'amount가 0 또는 음수입니다'}
                 return Response(data, status=status.HTTP_400_BAD_REQUEST)
-            basket.amount = amount
+            cart_item.amount = amount
 
-        basket.save()
+        cart_item.save()
         return self.get(request)
 
     def delete(self, request):
         user = request.user
         try:
-            item = Item.objects.get(pk=request.POST['item_pk'])
-        except Item.DoesNotExist:
-            data = {'error': '존재하지 않는 item입니다'}
-            return Response(data, status=status.HTTP_404_NOT_FOUND)
-
-        try:
-            basket = Basket.objects.get(user=user, item=item, order_yn=False)
+            cart_item = Basket.objects.get(pk=request.data.get('cart_item_pk'), user=user, order_yn=False)
         except Basket.DoesNotExist:
-            data = {'error': '장바구니에 존재하지 않는 항목입니다'}
+            data = {'error': '존재하지 않는 장바구니 속성입니다'}
             return Response(data, status=status.HTTP_404_NOT_FOUND)
 
-        basket.delete()
+        cart_item.delete()
 
         return self.get(request)
 
