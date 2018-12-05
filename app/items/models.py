@@ -62,7 +62,7 @@ class ItemImage(models.Model):
         return f'[{self.item.company}]{self.item.item_name}/{self.photo_type}-{self.image_order}'
 
     class Meta:
-        ordering = ['photo_type', 'image_order']
+        ordering = ['-photo_type', 'image_order']
 
 
 class Description(models.Model):
