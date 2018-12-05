@@ -39,13 +39,8 @@ class CategoryItemListAPIView(APIView):
 
         items = Item.objects.filter(categories=category)
 
-        if category.photo:
-            category_img = category.photo.url
-        else:
-            category_img = None
-
         data = {
-            'category_img': category_img,
+            'current_categories': CategorySerializer(category).data,
             'sub_categories': CategorySerializer(sub_cetegories, many=True).data,
             'item_list': ItemsListSerializer(items, many=True).data,
         }
