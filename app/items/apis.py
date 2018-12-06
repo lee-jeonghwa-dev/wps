@@ -18,8 +18,9 @@ class CategoryItemListAPIView(APIView):
         ###################################################################
         # category subcategory내용과 img, list들 보여주기
 
-        # query_params에서 pk 값을 가져옴
+        # query_params에서 pk, page 값을 가져옴
         categories_pk = request.query_params.get('category_pk')
+        page = request.query_params.get('page')
 
         # pk로 보내지 않은 경우
         if not categories_pk:
@@ -38,7 +39,23 @@ class CategoryItemListAPIView(APIView):
 
         sub_cetegories = Category.objects.filter(main_category=category.main_category)
 
-        items = Item.objects.filter(categories=category)
+        # pk 기준으로 내림차순으로 items목록 정렬
+        # 24개씩 나눌 Paginator객체 생성
+        paginator = Paginator(
+            Item.objects.filter(categories=category).order_by('pk'),
+            24,
+        )
+
+        try:
+            items = paginator.page(page)
+        except PageNotAnInteger:
+            # page변수가 정수가 아니어서 발생한 예외의 경우
+            # -> 무조건 첫 페이지를 가져옴
+            items = paginator.page(1)
+        except EmptyPage:
+            # page변수에 해당하는 Page에 내용이 없는 경우
+            # -> 무조건 마지막 페이지를 가져옴
+            items = paginator.page(paginator.num_pages)
 
         data = {
             'current_categories': CategorySerializer(category).data,
@@ -68,5 +85,3 @@ class ItemDetailAPIView(APIView):
             return Response(data=data, status=status.HTTP_404_NOT_FOUND)
 
         return Response(ItemDetailSerializer(item).data)
-
-
