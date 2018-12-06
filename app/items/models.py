@@ -91,5 +91,22 @@ class Description(models.Model):
         return f'[{self.item.company}]{self.item.item_name}'
 
 
+class Comment(models.Model):
+    item = models.ForeignKey(
+        Item,
+        on_delete=models.CASCADE,
+    )
+    content = models.TextField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f'[{self.item.company}]{self.item.item_name}/{self.content}'
+
+
+
+
 
 
