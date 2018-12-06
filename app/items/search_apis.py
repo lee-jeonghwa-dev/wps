@@ -22,11 +22,9 @@ class SearchView(APIView):
             }
             return Response(data, status=status.HTTP_400_BAD_REQUEST)
 
-        items1 = Item.objects.filter(item_name__contains=search_str) | Item.objects.filter(company__contains=search_str)
-
-        items2 = Item.objects.filter(description__item_type__contains=search_str)
-
-        items = items1 | items2
+        items = Item.objects.filter(item_name__contains=search_str) | \
+                Item.objects.filter(company__contains=search_str) | \
+                Item.objects.filter(description__item_type__contains=search_str)
 
         serializer = ItemsListSerializer(items, many=True)
 
