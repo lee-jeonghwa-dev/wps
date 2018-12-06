@@ -1,4 +1,6 @@
 from django.contrib.auth import get_user_model
+from django.db import transaction
+from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import permissions, status, generics
@@ -109,7 +111,10 @@ class OrderView(APIView):
         serializer = OrderSerializer(bills, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
+    @action(methods=['POST'], detail=True)
+    @transaction.atomic
     def post(self, request):
+        sid = transaction.savepoint()
         user = request.user
         address = request.data.get('address')
         delivery_date = request.data.get('delivery_date')
@@ -136,9 +141,11 @@ class OrderView(APIView):
                 data = {
                     'error': '장바구니에 존재하지 않는 item을 주문하려고 합니다'
                 }
+                transaction.savepoint_rollback(sid)
                 return Response(data, status=status.HTTP_400_BAD_REQUEST)
 
             order_item.order = bill
             order_item.order_yn = True
             order_item.save()
+        transaction.savepoint_commit(sid)
         return Response(OrderSerializer(bill).data, status=status.HTTP_200_OK)
