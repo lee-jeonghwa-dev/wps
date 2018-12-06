@@ -10,6 +10,9 @@ ALLOWED_HOSTS = [
     '.elasticbeanstalk.com',
     'localhost',
     '127.0.0.1',
+    'elegantsiblings.xyz',
+    'www.elegantsiblings.xyz',
+    'api.elegantsiblings.xyz',
 ]
 
 # Database
