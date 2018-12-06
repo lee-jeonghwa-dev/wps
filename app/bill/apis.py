@@ -120,6 +120,13 @@ class OrderView(APIView):
         delivery_date = request.data.get('delivery_date')
         order_item_list = request.data.get('order_item_list')
         total_price = request.data.get('total_price')
+
+        if not (user and address and delivery_date and order_item_list and total_price):
+            data = {
+                'error': '입력한 조건으로 주문이 불가능 합니다'
+            }
+            return Response(data, status=status.HTTP_400_BAD_REQUEST)
+
         try:
             bill = Bill.objects.create(
                 user=user,
