@@ -2,9 +2,10 @@
 server {
     #80번 포트로부터 받은 요청을 처리
     listen 80;
+    listen 443;
 
     # 도메인이 'localhost' 에 해당 할 때
-    server_name localhost *.elasticbeanstalk.com;
+    server_name localhost *.elasticbeanstalk.com elegantsiblings.xyz www.elegantsiblings.xyz api.elegantsiblings.xyz;
 
     # 인코딩 방식
     charset utf-8;
@@ -18,5 +19,9 @@ server {
         # "/tmp/app.sock" 파일을 사용
         uwsgi_pass  unix://tmp/app.sock;
         include     uwsgi_params;
+    }
+
+    if ($http_x_forwarded_proto = 'http'){
+        return 301 https://$host$request_uri;
     }
 }
