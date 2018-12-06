@@ -75,7 +75,8 @@ CORS_ORIGIN_WHITELIST = (
     '127.0.0.1:8000',
     'localhost:3000',
     '127.0.0.1:3000',
-    'https://baeminchan.netlify.com',
+    # 'https://baeminchan.netlify.com',
+    'https://baeminchan.netlify.com/'
 )
 
 ROOT_URLCONF = 'config.urls'
