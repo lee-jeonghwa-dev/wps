@@ -3,7 +3,11 @@ from django.urls import path, include
 from items import apis as items_apis
 from members import apis as members_apis
 from bill import apis as cart_apis
+from items import search_apis
 
+urlpatterns_api_search = ([
+    path('', search_apis.SearchView.as_view()),
+], 'search')
 
 urlpatterns_api_order = ([
     path('', cart_apis.OrderView.as_view()),
@@ -42,6 +46,7 @@ urlpatterns_api = ([
     path('members/', include(urlpatterns_api_members)),
     path('cart/', include(urlpatterns_api_cart)),
     path('order/', include(urlpatterns_api_order)),
+    path('search/', include(urlpatterns_api_search)),
 ], 'api')
 
 urlpatterns = [
