@@ -5,6 +5,7 @@ from rest_framework.views import APIView
 from .models import Item
 from .serializers import ItemsListSerializer
 
+
 class SearchView(APIView):
 
     def get(self, request, format=None):

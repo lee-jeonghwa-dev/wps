@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import Item, Category, ItemImage, Description
+from .models import Item, Category, ItemImage, Description, Comment
 
 
 # category 종류를 보여줌
@@ -75,10 +75,25 @@ class ItemImageSerializer(serializers.ModelSerializer):
         )
 
 
+# 댓글
+class CommentSerializer(serializers.ModelSerializer):
+    comment_pk = serializers.CharField(source='pk')
+    item_pk = serializers.CharField(source='item.pk')
+
+    class Meta:
+        model = Comment
+        fields = (
+            'comment_pk',
+            'item_pk',
+            'content'
+        )
+
+
 # Item 상세페이지에서 필요한 정보를 제공함
 class ItemDetailSerializer(serializers.ModelSerializer):
     description = ItemDescriptionSerializer()
     itemimage_set = ItemImageSerializer(many=True)
+    comment_set = CommentSerializer(many=True)
 
     item_pk = serializers.CharField(source='pk')
 
@@ -92,10 +107,8 @@ class ItemDetailSerializer(serializers.ModelSerializer):
             'sale_price',
             'discount_rate',
             'description',
-            'itemimage_set'
+            'itemimage_set',
+            'comment_set'
         )
-
-
-
 
 

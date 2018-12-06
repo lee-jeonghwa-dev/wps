@@ -5,6 +5,11 @@ from members import apis as members_apis
 from bill import apis as cart_apis
 from items import search_apis
 
+
+urlpatterns_api_comment = ([
+    path('', items_apis.CommentView.as_view()),
+], 'comment')
+
 urlpatterns_api_search = ([
     path('', search_apis.SearchView.as_view()),
 ], 'search')
@@ -25,6 +30,7 @@ urlpatterns_api_members_signup = ([
 
 
 urlpatterns_api_members = ([
+    path('user/', members_apis.UserView.as_view()),
     path('signup/', include(urlpatterns_api_members_signup)),
     path('login/', members_apis.SiteAuthTokenAPIView.as_view()),
     path('social-login/', members_apis.SocialAuthTokenAPIView.as_view()),
@@ -47,6 +53,7 @@ urlpatterns_api = ([
     path('cart/', include(urlpatterns_api_cart)),
     path('order/', include(urlpatterns_api_order)),
     path('search/', include(urlpatterns_api_search)),
+    path('comment/', include(urlpatterns_api_comment)),
 ], 'api')
 
 urlpatterns = [
