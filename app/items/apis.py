@@ -46,6 +46,11 @@ class CategoryItemListAPIView(APIView):
             24,
         )
 
+        # page 목록 생성
+        page_list = []
+        for num in paginator.page_range:
+            page_list.append(num)
+
         try:
             items = paginator.page(page)
         except PageNotAnInteger:
@@ -61,6 +66,7 @@ class CategoryItemListAPIView(APIView):
             'current_categories': CategorySerializer(category).data,
             'sub_categories': CategorySerializer(sub_cetegories, many=True).data,
             'item_list': ItemsListSerializer(items, many=True).data,
+            'page_list': page_list,
         }
         return Response(data, status=status.HTTP_200_OK)
 
