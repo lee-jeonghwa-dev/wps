@@ -3,14 +3,11 @@ from django.db import transaction
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework import permissions, status, generics
+from rest_framework import permissions, status
 
 from items.models import Item
-from items.serializers import ItemsListSerializer
-from members.permission import IsUser
 from .models import Basket, Bill
 from .serializers import BasketSerializer, OrderSerializer
-from members.serializers import UserSerializer
 
 User = get_user_model()
 
@@ -120,6 +117,7 @@ class OrderView(APIView):
         delivery_date = request.data.get('delivery_date')
         order_item_list = request.data.get('order_item_list')
         total_price = request.data.get('total_price')
+        check_price = 0
 
         if not (user and address and delivery_date and order_item_list and total_price):
             data = {
@@ -154,5 +152,16 @@ class OrderView(APIView):
             order_item.order = bill
             order_item.order_yn = True
             order_item.save()
+            check_price += order_item.item.sale_price * order_item.amount
+
+        if check_price < 40000:
+            check_price += 2500
+        if check_price != total_price:
+            data = {
+                'error': '결제시도 금액이 실제 가격과 다릅니다'
+            }
+            transaction.savepoint_rollback(sid)
+            return Response(data, status=status.HTTP_400_BAD_REQUEST)
+
         transaction.savepoint_commit(sid)
         return Response(OrderSerializer(bill).data, status=status.HTTP_200_OK)
