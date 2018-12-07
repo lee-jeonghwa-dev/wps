@@ -115,7 +115,7 @@ class SocialAuthTokenSerializer(serializers.Serializer):
         try:
             user = User.objects.get(username=filtered_data['username'])
         except User.DoesNotExist:
-            user = User.objects.create_user(**filtered_data)
+            user = User.objects.create_user(**filtered_data, site_member=False)
 
         self.user = user
         return data

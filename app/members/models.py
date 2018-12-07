@@ -4,3 +4,4 @@ from django.db import models
 
 class User(AbstractUser):
     img_profile = models.ImageField(upload_to='user', blank=True)
+    site_member = models.BooleanField(default=True)
