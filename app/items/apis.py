@@ -21,6 +21,7 @@ class CategoryItemListAPIView(APIView):
         # query_params에서 pk, page 값을 가져옴
         categories_pk = request.query_params.get('category_pk')
         page = request.query_params.get('page')
+        is_ios = request.query_params.get('is_ios')
 
         # pk로 보내지 않은 경우
         if not categories_pk:
@@ -38,29 +39,33 @@ class CategoryItemListAPIView(APIView):
             return Response(data=data, status=status.HTTP_404_NOT_FOUND)
 
         sub_cetegories = Category.objects.filter(main_category=category.main_category)
-
-        # pk 기준으로 내림차순으로 items목록 정렬
-        # 24개씩 나눌 Paginator객체 생성
-        paginator = Paginator(
-            Item.objects.filter(categories=category).order_by('pk'),
-            24,
-        )
-
-        # page 목록 생성
         page_list = []
-        for num in paginator.page_range:
-            page_list.append(num)
 
-        try:
-            items = paginator.page(page)
-        except PageNotAnInteger:
-            # page변수가 정수가 아니어서 발생한 예외의 경우
-            # -> 무조건 첫 페이지를 가져옴
-            items = paginator.page(1)
-        except EmptyPage:
-            # page변수에 해당하는 Page에 내용이 없는 경우
-            # -> 무조건 마지막 페이지를 가져옴
-            items = paginator.page(paginator.num_pages)
+        # ios여부 체크 후 ios일 경우 페이징을 적용하지 않음
+        if is_ios:
+            items = Item.objects.filter(categories=category).order_by('pk')
+        else:
+            # pk 기준으로 내림차순으로 items목록 정렬
+            # 24개씩 나눌 Paginator객체 생성
+            paginator = Paginator(
+                Item.objects.filter(categories=category).order_by('pk'),
+                24,
+            )
+
+            # page 목록 생성
+            for num in paginator.page_range:
+                page_list.append(num)
+
+            try:
+                items = paginator.page(page)
+            except PageNotAnInteger:
+                # page변수가 정수가 아니어서 발생한 예외의 경우
+                # -> 무조건 첫 페이지를 가져옴
+                items = paginator.page(1)
+            except EmptyPage:
+                # page변수에 해당하는 Page에 내용이 없는 경우
+                # -> 무조건 마지막 페이지를 가져옴
+                items = paginator.page(paginator.num_pages)
 
         data = {
             'current_categories': CategorySerializer(category).data,
