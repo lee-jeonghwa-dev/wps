@@ -41,6 +41,7 @@ class CategoryItemListAPIView(APIView):
         sub_cetegories = Category.objects.filter(main_category=category.main_category)
         page_list = []
 
+        # ios여부 체크 후 ios일 경우 페이징을 적용하지 않음
         if is_ios:
             items = Item.objects.filter(categories=category).order_by('pk')
         else:
