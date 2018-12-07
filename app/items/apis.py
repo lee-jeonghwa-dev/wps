@@ -1,10 +1,10 @@
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
-from rest_framework import status
+from rest_framework import status, generics
 from rest_framework.views import APIView
 from rest_framework.response import Response
 
-from .models import Item, Category
-from .serializers import CategorySerializer, ItemsListSerializer, ItemDetailSerializer
+from .models import Item, Category, Comment
+from .serializers import CategorySerializer, ItemsListSerializer, ItemDetailSerializer, CommentSerializer
 
 
 # 메인 화면에 카테고리들의 pk를 보내준다
@@ -96,3 +96,26 @@ class ItemDetailAPIView(APIView):
             return Response(data=data, status=status.HTTP_404_NOT_FOUND)
 
         return Response(ItemDetailSerializer(item).data)
+
+
+class CommentView(APIView):
+    def post(self, request):
+        item_pk = request.data.get('item_pk')
+        content = request.data.get('content')
+
+        if not content:
+            data = {
+                'error': '댓글내용이 없습니다'
+            }
+            return Response(data, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            item = Item.objects.get(pk=item_pk)
+        except Item.DoesNotExist:
+            data = {
+                'error': '올바르지 않은 Item 입니다'
+            }
+            return Response(data, status=status.HTTP_400_BAD_REQUEST)
+
+        comment = Comment.objects.create(item=item, content=content)
+        return Response(CommentSerializer(comment).data, status=status.HTTP_201_CREATED)
