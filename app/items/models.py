@@ -83,7 +83,7 @@ class Description(models.Model):
     factory_address = models.TextField()
     dom = models.CharField(max_length=100)
     capacity = models.CharField(max_length=30)
-    ingredient = models.TextField()
+    ingredient = models.TextField(max_length=10000)
     allergy_material = models.TextField()
     caution = models.TextField()
 
