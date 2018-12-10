@@ -75,15 +75,15 @@ class Description(models.Model):
     added_words = models.CharField(max_length=200, null=True, blank=True)
     point = models.IntegerField(default=0)
     delivery_type = models.CharField(max_length=200)
-    receive_day = models.CharField(max_length=100)
+    receive_day = models.CharField(max_length=200)
     regular_delivery = models.BooleanField(default=False)
 
     # 상품정보고시 내용
-    item_type = models.CharField(max_length=50)
+    item_type = models.CharField(max_length=2000)
     factory_address = models.TextField()
-    dom = models.CharField(max_length=100)
+    dom = models.CharField(max_length=2000)
     capacity = models.CharField(max_length=30)
-    ingredient = models.TextField(max_length=10000)
+    ingredient = models.TextField()
     allergy_material = models.TextField()
     caution = models.TextField()
 
