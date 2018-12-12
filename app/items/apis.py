@@ -1,4 +1,5 @@
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
+from django.db.models import Q
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -12,7 +13,9 @@ class CategoryItemListAPIView(APIView):
     def get(self, request, format=None):
         if not request.query_params:
             # query_params가 비어있으면 Category List 보여주기
-            categories = Category.objects.order_by('pk')
+            # 카테고리중 반찬브랜드 카테고리 제외
+            categories = Category.objects.exclude(
+                Q(pk=57) | Q(pk=58) | Q(pk=59) | Q(pk=60) | Q(pk=61) | Q(pk=62)).order_by('pk')
             return Response(CategorySerializer(categories, many=True).data)
 
         ###################################################################
@@ -122,4 +125,5 @@ class CommentView(APIView):
             comment = Comment.objects.create(item=item, content=content, nickname=nickname)
         else:
             comment = Comment.objects.create(item=item, content=content)
+
         return Response(CommentSerializer(comment).data, status=status.HTTP_201_CREATED)
