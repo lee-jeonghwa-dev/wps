@@ -8,7 +8,18 @@ ALLOWED_HOSTS = [
     '127.0.0.1',
 ]
 
-INSTALLED_APPS += ['django_extensions',]
+INSTALLED_APPS += [
+    'django_extensions',
+    'debug_toolbar',
+]
+
+MIDDLEWARE += [
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
+]
+
+INTERNAL_IPS = [
+    '127.0.0.1',
+]
 
 # Database
 # https://docs.djangoproject.com/en/2.1/ref/settings/#databases
@@ -25,3 +36,4 @@ DEFAULT_FILE_STORAGE = 'config.storages.MediaStorage'
 AWS_ACCESS_KEY_ID = secrets['AWS_ACCESS_KEY_ID']
 AWS_SECRET_ACCESS_KEY = secrets['AWS_SECRET_ACCESS_KEY']
 AWS_STORAGE_BUCKET_NAME = secrets['AWS_STORAGE_BUCKET_NAME']
+

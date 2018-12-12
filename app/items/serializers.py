@@ -85,7 +85,8 @@ class CommentSerializer(serializers.ModelSerializer):
         fields = (
             'comment_pk',
             'item_pk',
-            'content'
+            'content',
+            'nickname',
         )
 
 

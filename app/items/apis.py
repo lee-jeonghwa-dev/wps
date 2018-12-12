@@ -1,6 +1,6 @@
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.db.models import Q
-from rest_framework import status, generics
+from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
 
@@ -105,6 +105,7 @@ class CommentView(APIView):
     def post(self, request):
         item_pk = request.data.get('item_pk')
         content = request.data.get('content')
+        nickname = request.data.get('nickname')
 
         if not content:
             data = {
@@ -120,5 +121,9 @@ class CommentView(APIView):
             }
             return Response(data, status=status.HTTP_400_BAD_REQUEST)
 
-        comment = Comment.objects.create(item=item, content=content)
+        if nickname:
+            comment = Comment.objects.create(item=item, content=content, nickname=nickname)
+        else:
+            comment = Comment.objects.create(item=item, content=content)
+
         return Response(CommentSerializer(comment).data, status=status.HTTP_201_CREATED)
