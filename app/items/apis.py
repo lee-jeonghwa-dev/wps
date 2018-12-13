@@ -125,8 +125,10 @@ class CommentView(APIView):
             return Response(data, status=status.HTTP_400_BAD_REQUEST)
 
         if nickname:
-            comment = Comment.objects.create(item=item, content=content, nickname=nickname)
+            Comment.objects.create(item=item, content=content, nickname=nickname)
         else:
-            comment = Comment.objects.create(item=item, content=content)
+            Comment.objects.create(item=item, content=content)
 
-        return Response(CommentSerializer(comment).data, status=status.HTTP_201_CREATED)
+        comments = Comment.objects.filter(item=item)
+
+        return Response(CommentSerializer(comments, many=True).data, status=status.HTTP_201_CREATED)
