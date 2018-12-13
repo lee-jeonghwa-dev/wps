@@ -107,6 +107,9 @@ class CommentView(APIView):
         content = request.data.get('content')
         nickname = request.data.get('nickname')
 
+        if request.auth and not nickname:
+            nickname = request.user.username
+
         if not content:
             data = {
                 'error': '댓글내용이 없습니다'

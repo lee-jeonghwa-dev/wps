@@ -1,3 +1,5 @@
+import datetime
+
 from django.contrib.auth import get_user_model
 from django.db import transaction
 from rest_framework.decorators import action
@@ -133,7 +135,7 @@ class OrderView(APIView):
                 total_price=total_price
             )
         except Bill.DoesNotExist:
-            data ={
+            data = {
                 'error': '입력한 조건으로 주문이 불가능 합니다'
             }
             return Response(data, status=status.HTTP_400_BAD_REQUEST)
@@ -159,6 +161,17 @@ class OrderView(APIView):
         if check_price != total_price:
             data = {
                 'error': '결제시도 금액이 실제 가격과 다릅니다'
+            }
+            transaction.savepoint_rollback(sid)
+            return Response(data, status=status.HTTP_400_BAD_REQUEST)
+
+        delivery_date = datetime.datetime.strptime(delivery_date, '%Y-%m-%d')
+        order_date_time = bill.order_date_time + datetime.timedelta(hours=9)
+        order_date_time = order_date_time.replace(tzinfo=None)
+
+        if delivery_date < order_date_time:
+            data = {
+                'error': '배달 요청일이 주문일보다 빠릅니다'
             }
             transaction.savepoint_rollback(sid)
             return Response(data, status=status.HTTP_400_BAD_REQUEST)
