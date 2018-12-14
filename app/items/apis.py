@@ -105,7 +105,7 @@ class ItemDetailAPIView(APIView):
 
 class CommentView(APIView):
     def post(self, request):
-        item = get_object_or_404(Item, pk=request.data.pop('item_pk'))
+        item = get_object_or_404(Item, pk=request.data.get('item_pk'))
         nickname = request.data.get('nickname')
 
         if request.auth and not nickname:
