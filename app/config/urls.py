@@ -3,6 +3,7 @@ from django.urls import path, include
 
 from config import settings
 from items import apis as items_apis
+from items import restful_apis as items_restful_apis
 from members import apis as members_apis
 from bill import apis as cart_apis
 from items import search_apis
@@ -20,7 +21,6 @@ urlpatterns_api_order = ([
     path('', cart_apis.OrderView.as_view()),
 ], 'order')
 
-
 urlpatterns_api_cart = ([
     path('', cart_apis.ListCreateUpdateBasketItemView.as_view()),
 ], 'cart')
@@ -36,17 +36,17 @@ urlpatterns_api_members = ([
     path('signup/', include(urlpatterns_api_members_signup)),
     path('login/', members_apis.SiteAuthTokenAPIView.as_view()),
     path('social-login/', members_apis.SocialAuthTokenAPIView.as_view()),
-
     path('like-item/', members_apis.LikeItemListCreateDestroyView.as_view()),
 ], 'members')
 
 
 urlpatterns_api_item = ([
+    path('<int:pk>', items_restful_apis.ItemDetailAPIView.as_view()),
     path('', items_apis.ItemDetailAPIView.as_view()),
 ], 'item')
 
-
 urlpatterns_api_categories = ([
+    path('category/<int:pk>/', items_restful_apis.CategoryAPIView.as_view()),
     path('', items_apis.CategoryItemListAPIView.as_view()),
 ], 'categories')
 
