@@ -1,9 +1,15 @@
 from django.contrib.auth import get_user_model
-from rest_framework import status, permissions
+from rest_framework import generics, permissions, status
+from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from .serializers import SiteAuthTokenSerializer, SocialAuthTokenSerializer, SiteSigunUpSerializer
+from items.models import Item
+from items.serializers import ItemsListSerializer
+from .models import LikeItem
+from .permission import IsUser
+from .serializers import SiteAuthTokenSerializer, SocialAuthTokenSerializer, SiteSigunUpSerializer, \
+    LikeItemPostDeleteSerializer, LikeItemListSerializer
 from .serializers import UserSerializer
 
 User = get_user_model()
@@ -57,3 +63,38 @@ class UserView(APIView):
     def get(self, request, format=None):
         user = request.user
         return Response(UserSerializer(user).data, status=status.HTTP_200_OK)
+
+
+# 찜하기 기능
+class LikeItemListCreateDestroyView(APIView):
+    permission_classes = (
+        permissions.IsAuthenticated,
+        # IsUser,
+    )
+
+    def get(self, request):
+        like_items = LikeItem.objects.filter(user=request.user)
+        serializer = LikeItemListSerializer(like_items, many=True)
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def post(self, request):
+        item_pk = request.data.pop('item_pk')
+        serializer = LikeItemPostDeleteSerializer(
+            data={
+                'item': item_pk
+            },
+            context={'request': request},
+        )
+        if serializer.is_valid():
+            serializer.save()
+            return Response(status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request):
+        item = get_object_or_404(Item, pk=request.data.get('item_pk'))
+        like_item = get_object_or_404(
+            LikeItem, item=item, user=request.user)
+        like_item.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+

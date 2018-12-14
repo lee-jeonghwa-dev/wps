@@ -36,6 +36,8 @@ urlpatterns_api_members = ([
     path('signup/', include(urlpatterns_api_members_signup)),
     path('login/', members_apis.SiteAuthTokenAPIView.as_view()),
     path('social-login/', members_apis.SocialAuthTokenAPIView.as_view()),
+
+    path('like-item/', members_apis.LikeItemListCreateDestroyView.as_view()),
 ], 'members')
 
 
@@ -63,8 +65,8 @@ urlpatterns = [
     path('', include(urlpatterns_api)),
 ]
 
-# if settings.dev.DEBUG:
-#     import debug_toolbar
-#     urlpatterns = [
-#         path('__debug__/', include(debug_toolbar.urls)),
-#     ] + urlpatterns
+if settings.dev.DEBUG:
+    import debug_toolbar
+    urlpatterns = [
+        path('__debug__/', include(debug_toolbar.urls)),
+    ] + urlpatterns

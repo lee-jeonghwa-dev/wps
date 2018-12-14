@@ -3,6 +3,9 @@ from rest_framework import serializers
 from rest_framework.authtoken.models import Token
 from rest_framework.exceptions import AuthenticationFailed
 
+from items.serializers import ItemsListSerializer
+from .models import LikeItem
+
 User = get_user_model()
 
 
@@ -127,3 +130,36 @@ class SocialAuthTokenSerializer(serializers.Serializer):
             'token': token.key,
         }
         return data
+
+
+class LikeItemPostDeleteSerializer(serializers.ModelSerializer):
+    user = serializers.HiddenField(
+        default=serializers.CurrentUserDefault(),
+    )
+
+    class Meta:
+        model = LikeItem
+        fields = (
+            'user',
+            'item',
+        )
+        read_only_fields = (
+            'user',
+        )
+
+
+class LikeItemListSerializer(serializers.ModelSerializer):
+    user = serializers.HiddenField(
+        default=serializers.CurrentUserDefault(),
+    )
+    item = ItemsListSerializer()
+
+    class Meta:
+        model = LikeItem
+        fields = (
+            'user',
+            'item',
+        )
+        read_only_fields = (
+            'user',
+        )
