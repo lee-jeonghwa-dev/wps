@@ -14,7 +14,8 @@ from .serializers import BasketSerializer, OrderSerializer
 User = get_user_model()
 
 
-class ListCreateBasketItemView(APIView):
+# 장바구니
+class ListCreateUpdateBasketItemView(APIView):
     permission_classes = (
         permissions.IsAuthenticated,
     )
@@ -98,10 +99,10 @@ class ListCreateBasketItemView(APIView):
         return self.get(request)
 
 
+# 주문
 class OrderView(APIView):
     permission_classes = (
         permissions.IsAuthenticated,
-        # IsUser,
     )
 
     def get(self, request):

@@ -22,7 +22,7 @@ urlpatterns_api_order = ([
 
 
 urlpatterns_api_cart = ([
-    path('', cart_apis.ListCreateBasketItemView.as_view()),
+    path('', cart_apis.ListCreateUpdateBasketItemView.as_view()),
 ], 'cart')
 
 urlpatterns_api_members_signup = ([

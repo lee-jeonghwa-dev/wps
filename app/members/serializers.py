@@ -3,7 +3,7 @@ from rest_framework import serializers
 from rest_framework.authtoken.models import Token
 from rest_framework.exceptions import AuthenticationFailed
 
-from items.serializers import ItemsListSerializer
+from items.serializers import ItemsSimpleSerializer
 from .models import LikeItem
 
 User = get_user_model()
@@ -24,6 +24,7 @@ class UserSerializer(serializers.ModelSerializer):
         )
 
 
+# 사이트에서 회원가입
 class SiteSigunUpSerializer(serializers.Serializer):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -67,6 +68,7 @@ class SiteSigunUpSerializer(serializers.Serializer):
         return UserSerializer(self.user).data
 
 
+# 사이트 회원의 로그인/token 발행
 class SiteAuthTokenSerializer(serializers.Serializer):
     username = serializers.CharField()
     password = serializers.CharField()
@@ -94,6 +96,7 @@ class SiteAuthTokenSerializer(serializers.Serializer):
         return data
 
 
+# social loging을 이용한 회원가입/로그인 -> token 발행
 class SocialAuthTokenSerializer(serializers.Serializer):
     username = serializers.CharField()
 
@@ -132,7 +135,8 @@ class SocialAuthTokenSerializer(serializers.Serializer):
         return data
 
 
-class LikeItemPostDeleteSerializer(serializers.ModelSerializer):
+# 찜하기 생성, 삭제
+class LikeItemCreateDestroySerializer(serializers.ModelSerializer):
     user = serializers.HiddenField(
         default=serializers.CurrentUserDefault(),
     )
@@ -148,17 +152,19 @@ class LikeItemPostDeleteSerializer(serializers.ModelSerializer):
         )
 
 
+# 찜하기 목록보기
 class LikeItemListSerializer(serializers.ModelSerializer):
     user = serializers.HiddenField(
         default=serializers.CurrentUserDefault(),
     )
-    item = ItemsListSerializer()
+    item = ItemsSimpleSerializer()
 
     class Meta:
         model = LikeItem
         fields = (
             'user',
             'item',
+            'created_at',
         )
         read_only_fields = (
             'user',

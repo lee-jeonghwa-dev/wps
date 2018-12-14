@@ -5,16 +5,15 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from items.models import Item
-from items.serializers import ItemsListSerializer
 from .models import LikeItem
-from .permission import IsUser
 from .serializers import SiteAuthTokenSerializer, SocialAuthTokenSerializer, SiteSigunUpSerializer, \
-    LikeItemPostDeleteSerializer, LikeItemListSerializer
+    LikeItemCreateDestroySerializer, LikeItemListSerializer
 from .serializers import UserSerializer
 
 User = get_user_model()
 
 
+# 회원 가입시 동일 ID 있는지 check
 class SignUpCheckIDView(APIView):
     def post(self, request, format=None):
         username = request.POST.get('username')
@@ -30,6 +29,7 @@ class SignUpCheckIDView(APIView):
         return Response(data, status=status.HTTP_200_OK)
 
 
+# 회원 가입
 class SiteSignUpAPIView(APIView):
     def post(self, request, format=None):
         serializer = SiteSigunUpSerializer(data=request.data)
@@ -38,6 +38,7 @@ class SiteSignUpAPIView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+# 로그인시 token 발행
 class SiteAuthTokenAPIView(APIView):
     def post(self, request, format=None):
         serializer = SiteAuthTokenSerializer(data=request.data)
@@ -46,6 +47,7 @@ class SiteAuthTokenAPIView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+# social 로그인 시 token 발행
 class SocialAuthTokenAPIView(APIView):
 
     def post(self, request, format=None):
@@ -55,6 +57,7 @@ class SocialAuthTokenAPIView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+# token에 대한 user 정보
 class UserView(APIView):
     permission_classes = (
         permissions.IsAuthenticated,
@@ -69,7 +72,6 @@ class UserView(APIView):
 class LikeItemListCreateDestroyView(APIView):
     permission_classes = (
         permissions.IsAuthenticated,
-        # IsUser,
     )
 
     def get(self, request):
@@ -80,7 +82,7 @@ class LikeItemListCreateDestroyView(APIView):
 
     def post(self, request):
         item_pk = request.data.pop('item_pk')
-        serializer = LikeItemPostDeleteSerializer(
+        serializer = LikeItemCreateDestroySerializer(
             data={
                 'item': item_pk
             },

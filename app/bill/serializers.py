@@ -1,13 +1,13 @@
 from rest_framework import serializers
 
-from items.serializers import ItemsListSerializer
+from items.serializers import ItemsSimpleSerializer
 from members.serializers import UserSerializer
 from .models import Basket, Bill
 
 
 class BasketSerializer(serializers.ModelSerializer):
     user = UserSerializer()
-    item = ItemsListSerializer()
+    item = ItemsSimpleSerializer()
     cart_item_pk = serializers.CharField(source='pk', required=False)
 
     class Meta:

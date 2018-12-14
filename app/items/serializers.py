@@ -18,7 +18,7 @@ class CategorySerializer(serializers.ModelSerializer):
 
 
 # 반찬 List를 보여주는 page에 필요한 serializer
-class ItemsListSerializer(serializers.ModelSerializer):
+class ItemsSimpleSerializer(serializers.ModelSerializer):
     item_pk = serializers.CharField(source='pk')
 
     class Meta:

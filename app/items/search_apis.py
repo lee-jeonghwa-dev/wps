@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from .models import Item
-from .serializers import ItemsListSerializer
+from .serializers import ItemsSimpleSerializer
 
 
 class SearchView(APIView):
@@ -27,7 +27,7 @@ class SearchView(APIView):
                 Item.objects.filter(company__contains=search_str) | \
                 Item.objects.filter(description__item_type__contains=search_str)
 
-        serializer = ItemsListSerializer(items, many=True)
+        serializer = ItemsSimpleSerializer(items, many=True)
 
         return Response(serializer.data, status=status.HTTP_200_OK)
 

@@ -6,7 +6,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 
 from .models import Item, Category, Comment
-from .serializers import CategorySerializer, ItemsListSerializer, ItemDetailSerializer, CommentSerializer
+from .serializers import CategorySerializer, ItemsSimpleSerializer, ItemDetailSerializer, CommentSerializer
 
 
 # 메인 화면에 카테고리들의 pk를 보내준다
@@ -74,7 +74,7 @@ class CategoryItemListAPIView(APIView):
         data = {
             'current_categories': CategorySerializer(category).data,
             'sub_categories': CategorySerializer(sub_cetegories, many=True).data,
-            'item_list': ItemsListSerializer(items, many=True).data,
+            'item_list': ItemsSimpleSerializer(items, many=True).data,
             'page_list': page_list,
             'page': page,
         }
