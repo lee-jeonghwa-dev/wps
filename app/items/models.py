@@ -97,7 +97,7 @@ class Comment(models.Model):
         on_delete=models.CASCADE,
     )
     nickname = models.CharField(max_length=50, default='익명 사용자')
-    content = models.TextField(null=True, blank=True)
+    content = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:

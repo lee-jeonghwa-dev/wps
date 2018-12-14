@@ -77,17 +77,15 @@ class ItemImageSerializer(serializers.ModelSerializer):
 
 # 댓글
 class CommentSerializer(serializers.ModelSerializer):
-    comment_pk = serializers.CharField(source='pk')
-    item_pk = serializers.CharField(source='item.pk')
 
     class Meta:
         model = Comment
         fields = (
-            'comment_pk',
-            'item_pk',
+            'item',
             'content',
             'nickname',
         )
+        read_only_fields = ('nickname', )
 
 
 # Item 상세페이지에서 필요한 정보를 제공함

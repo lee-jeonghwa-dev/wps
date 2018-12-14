@@ -1,6 +1,7 @@
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.db.models import Q
 from rest_framework import status
+from rest_framework.generics import get_object_or_404
 from rest_framework.views import APIView
 from rest_framework.response import Response
 
@@ -103,31 +104,26 @@ class ItemDetailAPIView(APIView):
 
 class CommentView(APIView):
     def post(self, request):
-        item_pk = request.data.get('item_pk')
-        content = request.data.get('content')
+        item = get_object_or_404(Item, pk=request.data.pop('item_pk'))
         nickname = request.data.get('nickname')
 
         if request.auth and not nickname:
             nickname = request.user.username
 
-        if not content:
-            data = {
-                'error': '댓글내용이 없습니다'
-            }
-            return Response(data, status=status.HTTP_400_BAD_REQUEST)
-
-        try:
-            item = Item.objects.get(pk=item_pk)
-        except Item.DoesNotExist:
-            data = {
-                'error': '올바르지 않은 Item 입니다'
-            }
-            return Response(data, status=status.HTTP_400_BAD_REQUEST)
-
-        if nickname:
-            Comment.objects.create(item=item, content=content, nickname=nickname)
+        serializer = CommentSerializer(
+            data={
+                **request.data,
+                'item': item.pk
+            },
+            context={'request': request}
+        )
+        if serializer.is_valid():
+            if nickname:
+                serializer.save(nickname=nickname)
+            else:
+                serializer.save()
         else:
-            Comment.objects.create(item=item, content=content)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
         comments = Comment.objects.filter(item=item)
 
