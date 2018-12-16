@@ -1,25 +1,23 @@
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
-from rest_framework import status
+from rest_framework import status, generics
 from rest_framework.views import APIView
 from rest_framework.response import Response
 
 from .models import Item, Category
-from .serializers import CategorySerializer, ItemsSimpleSerializer, ItemDetailSerializer
+from .restful_serializers import CategorySerializer, ItemsSimpleSerializer, ItemDetailSerializer
 
 
-# 메인 화면에 카테고리들의 pk를 보내준다
+class CategoryListAPIView(generics.ListAPIView):
+    queryset = Category.objects.filter(pk__lt=57)
+    serializer_class = CategorySerializer
+
+
+# 각 카테고리에 속한 item list를 보여준다
 class CategoryAPIView(APIView):
     def get(self, request, pk, format=None):
-        # query_params에서 pk, page 값을 가져옴
+        # query_params에서 page 값을 가져옴
         page = request.query_params.get('page')
         is_ios = request.query_params.get('is_ios')
-
-        # pk로 보내지 않은 경우
-        if not pk:
-            data = {
-                'error': 'parameter를 category_pk로 보내주세요',
-            }
-            return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
 
         try:
             category = Category.objects.get(pk=pk)
@@ -68,21 +66,7 @@ class CategoryAPIView(APIView):
         return Response(data, status=status.HTTP_200_OK)
 
 
-class ItemDetailAPIView(APIView):
-    def get(self, request, pk, format=None):
-        # pk로 보내지 않은 경우
-        if not pk:
-            data = {
-                'error': 'parameter를 item_pk로 보내주세요, 또는 parameter를 보내지 않았습니',
-            }
-            return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
+class ItemDetailAPIView(generics.RetrieveAPIView):
+    queryset = Item.objects.all()
+    serializer_class = ItemDetailSerializer
 
-        try:
-            item = Item.objects.get(pk=pk)
-        except Item.DoesNotExist:
-            data = {
-                'error': '존재하지 않는 item 입니다',
-            }
-            return Response(data=data, status=status.HTTP_404_NOT_FOUND)
-
-        return Response(ItemDetailSerializer(item).data)
