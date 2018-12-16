@@ -1,12 +1,12 @@
 from rest_framework import serializers
 
+from items.models import Item
 from items.restful_serializers import ItemsSimpleSerializer
 from members.restful_serializers import UserSerializer
 from .models import Basket, Bill
 
 
 class BasketListSerializer(serializers.ModelSerializer):
-    user = UserSerializer()
     item = ItemsSimpleSerializer()
 
     class Meta:
@@ -23,6 +23,20 @@ class BasketCreateSerializer(serializers.ModelSerializer):
         model = Basket
         fields = ('pk', 'user', 'item', 'amount')
         read_only_fields = ('user',)
+
+    def validate(self, data):
+        data
+        if Basket.objects.filter(item=data['item'], user=data['user'], order_yn=False).exists():
+            raise serializers.ValidationError('이미 장바구니에 존재하는 반찬입니다')
+        return data
+
+    def validate_amount(self, value):
+        if value < 0:
+            raise serializers.ValidationError('주문량이 0보다 작습니다')
+        return value
+
+
+
 
 
 

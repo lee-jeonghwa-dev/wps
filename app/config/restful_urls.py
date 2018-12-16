@@ -6,12 +6,13 @@ from bill import restful_apis as bill_restful_apis
 
 urlpatterns_cart = ([
     path('', bill_restful_apis.BasketListCreateAPIView.as_view()),
-])
+    path('<int:pk>/', bill_restful_apis.BasketUpdateDeleteAPIView.as_view()),
+], 'cart')
 
 urlpatterns_category = ([
     path('', items_restful_apis.CategoryListAPIView.as_view()),
     path('<int:pk>/', items_restful_apis.CategoryAPIView.as_view()),
-])
+], 'categories')
 
 urlpatterns_restful = ([
     path('categories/', include(urlpatterns_category)),

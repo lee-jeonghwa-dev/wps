@@ -3,130 +3,76 @@ import datetime
 from django.contrib.auth import get_user_model
 from django.db import transaction
 from rest_framework.decorators import action
+from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import generics, permissions, status
 
 from items.models import Item
+from members.permission import IsOwner
 from .models import Basket, Bill
 from .restful_serializers import BasketCreateSerializer, BasketListSerializer
 
 User = get_user_model()
 
 
-# 장바구니 조회
+# 장바구니 조회/반찬 추가
 class BasketListCreateAPIView(generics.ListCreateAPIView):
     permission_classes = (
         permissions.IsAuthenticated,
     )
 
-    def list(self, request):
-        queryset = Basket.objects.all()
+    def list(self, request, format=None):
+        queryset = Basket.objects.filter(order_yn=False, user=request.user)
         serializer = BasketListSerializer(queryset, many=True)
         return Response(serializer.data)
 
-    def create(self, request):
+    def create(self, request, format=None):
         serializer = BasketCreateSerializer(
             data=request.data,
-            context={'request':request}
+            context={'request': request}
         )
         if serializer.is_valid():
             serializer.save()
-            return Response(status=status.HTTP_201_CREATED)
+            return Response(self.list(request).data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class BasketCreateAPIView(generics.CreateAPIView):
+class BasketUpdateDeleteAPIView(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = (
-        permissions.IsAuthenticated,
-    )
-    queryset = Basket.objects.all()
-    serializer_class = BasketCreateSerializer
-
-
-
-class ListCreateUpdateBasketItemView(APIView):
-    permission_classes = (
+        IsOwner,
         permissions.IsAuthenticated,
     )
 
-    def get(self, request):
-        user = request.user
-        baskets = Basket.objects.filter(user=user, order_yn=False)
-        serializer = BasketCreateSerializer(baskets, many=True)
-        return Response(data=serializer.data, status=status.HTTP_200_OK)
+    def retrieve(self, request, pk, format=None):
+        cart_item = get_object_or_404(Basket, user=request.user, pk=pk, order_yn=False)
+        serializer = BasketListSerializer(cart_item)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
-    def post(self, request):
-        user = request.user
-        try:
-            item = Item.objects.get(pk=request.data.get('item_pk'))
-        except Item.DoesNotExist:
-            data = {'error': '존재하지 않는 item입니다'}
-            return Response(data, status=status.HTTP_404_NOT_FOUND)
+    def partial_update(self, request, pk, format=None):
+        cart_item = get_object_or_404(Basket, user=request.user, order_yn=False, pk=pk)
 
-        if Basket.objects.filter(user=user, item=item, order_yn=False).exists():
-            data = {
-                'error': '이미 장바구니에 있는 item입니다. patch를 이용해주세요'
-            }
-            return Response(data, status=status.HTTP_400_BAD_REQUEST)
+        if request.data.get('add_amount'):
+            amount = cart_item.amount + request.data.get('add_amount')
+        else:
+            amount = request.data.get('amount')
 
-        Basket.objects.create(user=user, item=item, amount=request.data.get('amount'))
-        baskets = Basket.objects.filter(user=user, order_yn=False)
-        serializer = BasketSerializer(baskets, many=True)
-        return Response(data=serializer.data, status=status.HTTP_201_CREATED)
+        if amount < 0 or not amount:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
 
-    def patch(self, request):
-        user = request.user
-        try:
-            cart_item = Basket.objects.get(pk=request.data.get('cart_item_pk'), user=user, order_yn=False)
-        except Basket.DoesNotExist:
-            data = {'error': '존재하지 않는 장바구니 속성입니다'}
-            return Response(data, status=status.HTTP_404_NOT_FOUND)
-        add_amount = request.data.get('add_amount')
-        amount = request.data.get('amount')
-
-        if add_amount:
-            add_amount = int(add_amount)
-        if amount:
-            amount = int(amount)
-
-        # 예외사항 check
-        if add_amount and amount:
-            data = {'error': 'add_amount, amount 모두 있습니다'}
-            return Response(data, status=status.HTTP_400_BAD_REQUEST)
-        if not add_amount and not amount:
-            data = {'error': 'add_amount, amount 모두 없습니다'}
-            return Response(data, status=status.HTTP_400_BAD_REQUEST)
-        if cart_item.amount == amount or add_amount == 0:
-            data = {'error': 'amount에 변화가 없습니다'}
-            return Response(data, status=status.HTTP_400_BAD_REQUEST)
-
-        if add_amount:
-            if cart_item.amount + add_amount <= 0:
-                data = {'error': 'amount가 0 또는 음수입니다'}
-                return Response(data, status=status.HTTP_400_BAD_REQUEST)
-            cart_item.amount += add_amount
-
-        if amount:
-            if amount <= 0:
-                data = {'error': 'amount가 0 또는 음수입니다'}
-                return Response(data, status=status.HTTP_400_BAD_REQUEST)
-            cart_item.amount = amount
-
+        cart_item.amount = amount
         cart_item.save()
-        return self.get(request)
+        cart = Basket.objects.filter(user=request.user, order_yn=False)
+        return_serializer = BasketListSerializer(cart, many=True)
+        return Response(return_serializer.data, status=status.HTTP_200_OK)
 
-    def delete(self, request):
-        user = request.user
-        try:
-            cart_item = Basket.objects.get(pk=request.data.get('cart_item_pk'), user=user, order_yn=False)
-        except Basket.DoesNotExist:
-            data = {'error': '존재하지 않는 장바구니 속성입니다'}
-            return Response(data, status=status.HTTP_404_NOT_FOUND)
-
+    def destroy(self, request, pk, format=None):
+        cart_item = get_object_or_404(Basket, user=request.user, pk=pk, order_yn=False)
         cart_item.delete()
 
-        return self.get(request)
+        cart = Basket.objects.filter(user=request.user, order_yn=False)
+        return_serializer = BasketListSerializer(cart, many=True)
+        return Response(return_serializer.data, status=status.HTTP_200_OK)
 
 
 # 주문
