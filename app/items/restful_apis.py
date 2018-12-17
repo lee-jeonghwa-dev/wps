@@ -1,10 +1,11 @@
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from rest_framework import status, generics
+from rest_framework.generics import get_object_or_404
 from rest_framework.views import APIView
 from rest_framework.response import Response
 
-from .models import Item, Category
-from .restful_serializers import CategorySerializer, ItemsSimpleSerializer, ItemDetailSerializer
+from .models import Item, Category, Comment
+from .restful_serializers import CategorySerializer, ItemsSimpleSerializer, ItemDetailSerializer, CommentSerializer
 
 
 class CategoryListAPIView(generics.ListAPIView):
@@ -69,4 +70,32 @@ class CategoryAPIView(APIView):
 class ItemDetailAPIView(generics.RetrieveAPIView):
     queryset = Item.objects.all()
     serializer_class = ItemDetailSerializer
+
+
+class CommentView(APIView):
+    def post(self, request):
+        item = get_object_or_404(Item, pk=request.data.get('item_pk'))
+        nickname = request.data.get('nickname')
+
+        if request.auth and not nickname:
+            nickname = request.user.username
+
+        serializer = CommentSerializer(
+            data={
+                **request.data,
+                'item': item.pk
+            },
+            context={'request': request}
+        )
+        if serializer.is_valid():
+            if nickname:
+                serializer.save(nickname=nickname)
+            else:
+                serializer.save()
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        comments = Comment.objects.filter(item=item)
+
+        return Response(CommentSerializer(comments, many=True).data, status=status.HTTP_201_CREATED)
 

@@ -6,7 +6,7 @@ from rest_framework.decorators import action
 from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework import generics, permissions, status
+from rest_framework import generics, permissions, status, mixins
 
 from items.models import Item
 from members.permission import IsOwner
@@ -38,8 +38,10 @@ class BasketListCreateAPIView(generics.ListCreateAPIView):
             return Response(self.list(request).data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
 # 장바구니 수량변경, 아이템(반찬)삭제, 장바구니 한 항목 가져오기
-class BasketUpdateDeleteAPIView(generics.RetrieveUpdateDestroyAPIView):
+
+class BasketRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = (
         IsOwner,
         permissions.IsAuthenticated,

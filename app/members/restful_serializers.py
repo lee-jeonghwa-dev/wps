@@ -10,12 +10,11 @@ User = get_user_model()
 
 
 class UserSerializer(serializers.ModelSerializer):
-    user_pk = serializers.CharField(source='pk')
 
     class Meta:
         model = User
         fields = (
-            'user_pk',
+            'pk',
             'username',
             'first_name',
             'last_name',

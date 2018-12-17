@@ -3,7 +3,6 @@ from django.urls import path, include
 
 from config import settings
 from items import apis as items_apis
-from items import restful_apis as items_restful_apis
 from members import apis as members_apis
 from bill import apis as cart_apis
 from items import search_apis

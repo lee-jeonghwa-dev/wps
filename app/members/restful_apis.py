@@ -5,10 +5,11 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from items.models import Item
+from .permission import IsOwner
 from .models import LikeItem
-from .serializers import SiteAuthTokenSerializer, SocialAuthTokenSerializer, SiteSigunUpSerializer, \
+from .restful_serializers import SiteAuthTokenSerializer, SocialAuthTokenSerializer, SiteSigunUpSerializer, \
     LikeItemCreateDestroySerializer, LikeItemListSerializer
-from .serializers import UserSerializer
+from .restful_serializers import UserSerializer
 
 User = get_user_model()
 
