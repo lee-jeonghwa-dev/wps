@@ -67,9 +67,9 @@ urlpatterns = [
     path('', include(urlpatterns_api)),
     path('restful/', include(urlpatterns_restful)),
 ]
-
-if settings.dev.DEBUG:
-    import debug_toolbar
-    urlpatterns = [
-        path('__debug__/', include(debug_toolbar.urls)),
-    ] + urlpatterns
+#
+# if settings.dev.DEBUG:
+#     import debug_toolbar
+#     urlpatterns = [
+#         path('__debug__/', include(debug_toolbar.urls)),
+#     ] + urlpatterns
