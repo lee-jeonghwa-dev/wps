@@ -35,8 +35,8 @@ class Bill(models.Model):
     )
     order_date_time = models.DateTimeField(auto_now_add=True)
     address = models.TextField()
-    delivery_date = models.DateField(null=True, blank=True)
-    total_price = models.PositiveIntegerField(null=True, blank=True)
+    delivery_date = models.DateField()
+    total_price = models.PositiveIntegerField()
 
     class Meta:
         ordering = ['-order_date_time']

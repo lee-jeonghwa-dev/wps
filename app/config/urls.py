@@ -8,7 +8,7 @@ from members import apis as members_apis
 from bill import apis as cart_apis
 from items import search_apis
 
-from .restful_urls import urlpatterns_restful
+from .restful_urls import urlpatterns_new
 
 urlpatterns_api_comment = ([
     path('', items_apis.CommentView.as_view()),
@@ -42,12 +42,10 @@ urlpatterns_api_members = ([
 
 
 urlpatterns_api_item = ([
-    path('<int:pk>/', items_restful_apis.ItemDetailAPIView.as_view()),
     path('', items_apis.ItemDetailAPIView.as_view()),
 ], 'item')
 
 urlpatterns_api_categories = ([
-    path('category/<int:pk>/', items_restful_apis.CategoryAPIView.as_view()),
     path('', items_apis.CategoryItemListAPIView.as_view()),
 ], 'categories')
 
@@ -65,11 +63,11 @@ urlpatterns_api = ([
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include(urlpatterns_api)),
-    path('restful/', include(urlpatterns_restful)),
+    path('new/', include(urlpatterns_new)),
 ]
-#
-# if settings.dev.DEBUG:
-#     import debug_toolbar
-#     urlpatterns = [
-#         path('__debug__/', include(debug_toolbar.urls)),
-#     ] + urlpatterns
+
+if settings.dev.DEBUG:
+    import debug_toolbar
+    urlpatterns = [
+        path('__debug__/', include(debug_toolbar.urls)),
+    ] + urlpatterns

@@ -11,12 +11,13 @@ from rest_framework import generics, permissions, status
 from items.models import Item
 from members.permission import IsOwner
 from .models import Basket, Bill
-from .restful_serializers import BasketCreateSerializer, BasketListSerializer
+from .restful_serializers import BasketCreateSerializer, BasketListSerializer, OrderListSerializer, \
+    OrderCreateSerializer
 
 User = get_user_model()
 
 
-# 장바구니 조회/반찬 추가
+# 장바구니 조회/item(반찬) 추가
 class BasketListCreateAPIView(generics.ListCreateAPIView):
     permission_classes = (
         permissions.IsAuthenticated,
@@ -37,7 +38,7 @@ class BasketListCreateAPIView(generics.ListCreateAPIView):
             return Response(self.list(request).data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-
+# 장바구니 수량변경, 아이템(반찬)삭제, 장바구니 한 항목 가져오기
 class BasketUpdateDeleteAPIView(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = (
         IsOwner,
@@ -75,8 +76,8 @@ class BasketUpdateDeleteAPIView(generics.RetrieveUpdateDestroyAPIView):
         return Response(return_serializer.data, status=status.HTTP_200_OK)
 
 
-# 주문
-class OrderView(APIView):
+# 주문 전체 조회, 주문 생성
+class OrderListCreateView(APIView):
     permission_classes = (
         permissions.IsAuthenticated,
     )
@@ -84,74 +85,40 @@ class OrderView(APIView):
     def get(self, request):
         user = request.user
         bills = Bill.objects.filter(user=user).order_by('-order_date_time')
-        serializer = OrderSerializer(bills, many=True)
+        serializer = OrderListSerializer(bills, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     @action(methods=['POST'], detail=True)
     @transaction.atomic
     def post(self, request):
         sid = transaction.savepoint()
-        user = request.user
-        address = request.data.get('address')
-        delivery_date = request.data.get('delivery_date')
-        order_item_list = request.data.get('order_item_list')
-        total_price = request.data.get('total_price')
-        check_price = 0
+        basket_set = request.data.pop('cart_item_pk')
 
-        if not (user and address and delivery_date and order_item_list and total_price):
-            data = {
-                'error': '입력한 조건으로 주문이 불가능 합니다'
-            }
-            return Response(data, status=status.HTTP_400_BAD_REQUEST)
+        serializer = OrderCreateSerializer(
+            data={
+                **request.data,
+                'basket_set': basket_set
+            },
+            context={'request': request}
+        )
 
-        try:
-            bill = Bill.objects.create(
-                user=user,
-                address=address,
-                delivery_date=delivery_date,
-                total_price=total_price
-            )
-        except Bill.DoesNotExist:
-            data = {
-                'error': '입력한 조건으로 주문이 불가능 합니다'
-            }
-            return Response(data, status=status.HTTP_400_BAD_REQUEST)
+        if serializer.is_valid():
+            serializer.save()
+            bill = get_object_or_404(Bill, pk=serializer.data.get('pk'))
+            data = OrderListSerializer(bill).data
+            transaction.savepoint_commit(sid)
 
-        for order_item in order_item_list:
-            cart_item_pk = order_item['cart_item_pk']
-            try:
-                order_item = Basket.objects.get(pk=cart_item_pk, user=user, order_yn=False)
-            except Basket.DoesNotExist:
-                data = {
-                    'error': '장바구니에 존재하지 않는 item을 주문하려고 합니다'
-                }
-                transaction.savepoint_rollback(sid)
-                return Response(data, status=status.HTTP_400_BAD_REQUEST)
+            return Response(data=data, status=status.HTTP_200_OK)
 
-            order_item.order = bill
-            order_item.order_yn = True
-            order_item.save()
-            check_price += order_item.item.sale_price * order_item.amount
+        transaction.savepoint_rollback(sid)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-        if check_price < 40000:
-            check_price += 2500
-        if check_price != total_price:
-            data = {
-                'error': '결제시도 금액이 실제 가격과 다릅니다'
-            }
-            transaction.savepoint_rollback(sid)
-            return Response(data, status=status.HTTP_400_BAD_REQUEST)
 
-        delivery_date = datetime.datetime.strptime(delivery_date, '%Y-%m-%d')
-        order_date_time = bill.order_date_time + datetime.timedelta(hours=9)
-        order_date_time = order_date_time.replace(tzinfo=None)
-
-        if delivery_date < order_date_time:
-            data = {
-                'error': '배달 요청일이 주문일보다 빠릅니다'
-            }
-            transaction.savepoint_rollback(sid)
-            return Response(data, status=status.HTTP_400_BAD_REQUEST)
-
-        transaction.savepoint_commit(sid)
-        return Response(OrderSerializer(bill).data, status=status.HTTP_200_OK)
+# 특정 주문 조회
+class OrderRetrieveAPIView(generics.RetrieveAPIView):
+    permission_classes = (
+        permissions.IsAuthenticated,
+        IsOwner,
+    )
+    queryset = Bill.objects.all()
+    serializer_class = OrderListSerializer
