@@ -41,7 +41,7 @@ urlpatterns_category = ([
 ], 'categories')
 
 urlpatterns_search = ([
-    path('', search_apis.SearchView.as_view()),
+    path('', items_restful_apis.SearchView.as_view()),
 ], 'search')
 
 urlpatterns_new = ([
