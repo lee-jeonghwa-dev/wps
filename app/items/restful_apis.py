@@ -74,17 +74,13 @@ class ItemDetailAPIView(generics.RetrieveAPIView):
 
 class CommentView(APIView):
     def post(self, request):
-        item = get_object_or_404(Item, pk=request.data.get('item_pk'))
         nickname = request.data.get('nickname')
 
         if request.auth and not nickname:
             nickname = request.user.username
 
         serializer = CommentSerializer(
-            data={
-                **request.data,
-                'item': item.pk
-            },
+            data=request.data,
             context={'request': request}
         )
         if serializer.is_valid():
@@ -95,7 +91,7 @@ class CommentView(APIView):
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-        comments = Comment.objects.filter(item=item)
+        comments = Comment.objects.filter(item__pk=request.data.get('item'))
 
         return Response(CommentSerializer(comments, many=True).data, status=status.HTTP_201_CREATED)
 

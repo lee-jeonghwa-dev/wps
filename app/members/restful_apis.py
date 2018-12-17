@@ -5,7 +5,6 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from items.models import Item
-from .permission import IsOwner
 from .models import LikeItem
 from .restful_serializers import SiteAuthTokenSerializer, SocialAuthTokenSerializer, SiteSigunUpSerializer, \
     LikeItemCreateDestroySerializer, LikeItemListSerializer
@@ -16,8 +15,8 @@ User = get_user_model()
 
 # 회원 가입시 동일 ID 있는지 check
 class SignUpCheckIDView(APIView):
-    def post(self, request, format=None):
-        username = request.POST.get('username')
+    def get(self, request, format=None):
+        username = request.data.get('username')
         if not username:
             data = {'error': 'username 값이 없습니다'}
             return Response(data, status=status.HTTP_400_BAD_REQUEST)
@@ -82,11 +81,8 @@ class LikeItemListCreateDestroyView(APIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     def post(self, request):
-        item_pk = request.data.pop('item_pk')
         serializer = LikeItemCreateDestroySerializer(
-            data={
-                'item': item_pk
-            },
+            data=request.data,
             context={'request': request},
         )
         if serializer.is_valid():
@@ -95,9 +91,8 @@ class LikeItemListCreateDestroyView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request):
-        item = get_object_or_404(Item, pk=request.data.get('item_pk'))
         like_item = get_object_or_404(
-            LikeItem, item=item, user=request.user)
+            LikeItem, item__pk=request.data.get('item'), user=request.user)
         like_item.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
