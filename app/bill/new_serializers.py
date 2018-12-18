@@ -15,7 +15,7 @@ class BasketListSerializer(serializers.ModelSerializer):
         fields = ('pk', 'user', 'item', 'amount')
 
 
-# 장바구니 생성시 필요
+# 장바구니 생성, 수정, 삭제시 필요
 class BasketCreateSerializer(serializers.ModelSerializer):
     user = serializers.HiddenField(
         default=serializers.CurrentUserDefault(),

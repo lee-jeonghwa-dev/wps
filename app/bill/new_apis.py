@@ -19,10 +19,14 @@ class BasketListCreateAPIView(generics.ListCreateAPIView):
         permissions.IsAuthenticated,
     )
 
-    def list(self, request, format=None):
-        queryset = Basket.objects.filter(order_yn=False, user=request.user)
-        serializer = BasketListSerializer(queryset, many=True)
-        return Response(serializer.data)
+    def get_queryset(self):
+        return Basket.objects.filter(order_yn=False, user=self.request.user)
+
+    def get_serializer_class(self):
+        if self.request.method == 'GET':
+            return BasketListSerializer
+        elif self.request.method == 'POST':
+            return BasketCreateSerializer
 
     def create(self, request, format=None):
         serializer = BasketCreateSerializer(
@@ -31,7 +35,9 @@ class BasketListCreateAPIView(generics.ListCreateAPIView):
         )
         if serializer.is_valid():
             serializer.save()
-            return Response(self.list(request).data, status=status.HTTP_201_CREATED)
+            cart_items = Basket.objects.filter(user=request.user, order_yn=False)
+            return_serializer = BasketListSerializer(cart_items, many=True)
+            return Response(return_serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -42,10 +48,16 @@ class BasketRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
         permissions.IsAuthenticated,
     )
 
-    def retrieve(self, request, pk, format=None):
-        cart_item = get_object_or_404(Basket, user=request.user, pk=pk, order_yn=False)
-        serializer = BasketListSerializer(cart_item)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+    def get_queryset(self):
+        return Basket.objects.filter(order_yn=False, user=self.request.user)
+
+    def get_serializer_class(self):
+        if self.request.method == 'GET':
+            return BasketListSerializer
+        elif self.request.method == 'PATCH':
+            return BasketCreateSerializer
+        elif self.request.method == 'DELETE':
+            return BasketCreateSerializer
 
     def partial_update(self, request, pk, format=None):
         cart_item = get_object_or_404(Basket, user=request.user, order_yn=False, pk=pk)
