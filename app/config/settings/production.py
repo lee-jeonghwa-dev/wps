@@ -13,6 +13,7 @@ ALLOWED_HOSTS = [
     'elegantsiblings.xyz',
     'www.elegantsiblings.xyz',
     'api.elegantsiblings.xyz',
+    '172.31.9.120',
 ]
 
 # Database
