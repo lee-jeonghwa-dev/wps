@@ -121,7 +121,9 @@ class SearchView(APIView):
                 Item.objects.filter(description__item_type__contains=search_str)
 
         page_list = []
-        if not is_ios:
+        if is_ios and (type(is_ios) == bool):
+            items = items
+        else:
             paginator = Paginator(
                 items,
                 24,
