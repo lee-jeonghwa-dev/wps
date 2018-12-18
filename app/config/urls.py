@@ -5,7 +5,6 @@ from config import settings
 from items import apis as items_apis
 from members import apis as members_apis
 from bill import apis as cart_apis
-from items import search_apis
 
 from .new_urls import urlpatterns_new
 
@@ -14,7 +13,7 @@ urlpatterns_api_comment = ([
 ], 'comment')
 
 urlpatterns_api_search = ([
-    path('', search_apis.SearchView.as_view()),
+    path('', items_apis.SearchView.as_view()),
 ], 'search')
 
 urlpatterns_api_order = ([
