@@ -46,7 +46,7 @@ class CategoryItemListAPIView(APIView):
         page_list = []
 
         # ios여부 체크 후 ios일 경우 페이징을 적용하지 않음
-        if is_ios:
+        if is_ios and (type(is_ios) == bool):
             items = Item.objects.filter(categories=category).order_by('pk')
         else:
             # pk 기준으로 내림차순으로 items목록 정렬
