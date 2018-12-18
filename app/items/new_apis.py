@@ -5,7 +5,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 
 from .models import Item, Category, Comment
-from .restful_serializers import CategorySerializer, ItemsSimpleSerializer, ItemDetailSerializer, CommentSerializer
+from .new_serializers import CategorySerializer, ItemsSimpleSerializer, ItemDetailSerializer, CommentSerializer
 
 
 class CategoryListAPIView(generics.ListAPIView):

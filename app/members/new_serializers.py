@@ -3,7 +3,7 @@ from rest_framework import serializers
 from rest_framework.authtoken.models import Token
 from rest_framework.exceptions import AuthenticationFailed
 
-from items.restful_serializers import ItemsSimpleSerializer
+from items.new_serializers import ItemsSimpleSerializer
 from .models import LikeItem
 
 User = get_user_model()

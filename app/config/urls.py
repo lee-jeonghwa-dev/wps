@@ -7,7 +7,7 @@ from members import apis as members_apis
 from bill import apis as cart_apis
 from items import search_apis
 
-from .restful_urls import urlpatterns_new
+from .new_urls import urlpatterns_new
 
 urlpatterns_api_comment = ([
     path('', items_apis.CommentView.as_view()),

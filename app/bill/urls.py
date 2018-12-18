@@ -1,10 +1,5 @@
 from django.urls import path, include
 
-from items import restful_apis as items_restful_apis
-from items import search_apis as search_apis
-from bill import restful_apis as bill_restful_apis
-from members import restful_apis as members_apis
-
 
 urlpatterns_comment = ([
     path('', items_restful_apis.CommentView.as_view()),
@@ -44,13 +39,6 @@ urlpatterns_search = ([
     path('', items_restful_apis.SearchView.as_view()),
 ], 'search')
 
-urlpatterns_new = ([
-    path('categories/', include(urlpatterns_category)),
-    path('item/<int:pk>/', items_restful_apis.ItemDetailAPIView.as_view()),
-    path('cart/', include(urlpatterns_cart)),
-    path('order/', include(urlpatterns_order)),
-    path('members/', include(urlpatterns_members)),
-    path('search/', include(urlpatterns_search)),
-    path('comment/', include(urlpatterns_comment)),
-], 'restful')
-
+urlpatterns_item = ([
+    path('<int:pk>/', items_restful_apis.ItemDetailAPIView.as_view())
+], 'item')

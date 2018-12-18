@@ -6,9 +6,9 @@ from rest_framework.views import APIView
 
 from items.models import Item
 from .models import LikeItem
-from .restful_serializers import SiteAuthTokenSerializer, SocialAuthTokenSerializer, SiteSigunUpSerializer, \
+from .new_serializers import SiteAuthTokenSerializer, SocialAuthTokenSerializer, SiteSigunUpSerializer, \
     LikeItemCreateDestroySerializer, LikeItemListSerializer
-from .restful_serializers import UserSerializer
+from .new_serializers import UserSerializer
 
 User = get_user_model()
 

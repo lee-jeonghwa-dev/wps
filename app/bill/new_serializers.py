@@ -4,8 +4,8 @@ from django.db import transaction
 from rest_framework import serializers
 
 from items.models import Item
-from items.restful_serializers import ItemsSimpleSerializer
-from members.restful_serializers import UserSerializer
+from items.new_serializers import ItemsSimpleSerializer
+from members.new_serializers import UserSerializer
 from .models import Basket, Bill
 
 

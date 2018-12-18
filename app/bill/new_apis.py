@@ -11,7 +11,7 @@ from rest_framework import generics, permissions, status, mixins
 from items.models import Item
 from members.permission import IsOwner
 from .models import Basket, Bill
-from .restful_serializers import BasketCreateSerializer, BasketListSerializer, OrderListSerializer, \
+from .new_serializers import BasketCreateSerializer, BasketListSerializer, OrderListSerializer, \
     OrderCreateSerializer
 
 User = get_user_model()
@@ -94,7 +94,7 @@ class OrderListCreateView(APIView):
     @transaction.atomic
     def post(self, request):
         sid = transaction.savepoint()
-        basket_set = request.data.pop('cart_item_pk')
+        basket_set = request.data.get('cart_item_pk')
 
         serializer = OrderCreateSerializer(
             data={
