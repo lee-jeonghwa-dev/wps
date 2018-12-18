@@ -1,5 +1,3 @@
-import datetime
-
 from django.contrib.auth import get_user_model
 from django.db import transaction
 from rest_framework.decorators import action
@@ -8,11 +6,9 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import generics, permissions, status, mixins
 
-from items.models import Item
 from members.permission import IsOwner
 from .models import Basket, Bill
-from .new_serializers import BasketCreateSerializer, BasketListSerializer, OrderListSerializer, \
-    OrderCreateSerializer
+from .new_serializers import BasketCreateSerializer, BasketListSerializer, OrderListSerializer, OrderCreateSerializer
 
 User = get_user_model()
 
@@ -40,7 +36,6 @@ class BasketListCreateAPIView(generics.ListCreateAPIView):
 
 
 # 장바구니 수량변경, 아이템(반찬)삭제, 장바구니 한 항목 가져오기
-
 class BasketRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = (
         IsOwner,

@@ -1,14 +1,12 @@
 import datetime
 
-from django.db import transaction
 from rest_framework import serializers
 
-from items.models import Item
 from items.new_serializers import ItemsSimpleSerializer
-from members.new_serializers import UserSerializer
 from .models import Basket, Bill
 
 
+# 장바구니 조회시 필요
 class BasketListSerializer(serializers.ModelSerializer):
     item = ItemsSimpleSerializer()
 
@@ -17,6 +15,7 @@ class BasketListSerializer(serializers.ModelSerializer):
         fields = ('pk', 'user', 'item', 'amount')
 
 
+# 장바구니 생성시 필요
 class BasketCreateSerializer(serializers.ModelSerializer):
     user = serializers.HiddenField(
         default=serializers.CurrentUserDefault(),
@@ -28,7 +27,6 @@ class BasketCreateSerializer(serializers.ModelSerializer):
         read_only_fields = ('user',)
 
     def validate(self, data):
-        data
         if Basket.objects.filter(item=data['item'], user=data['user'], order_yn=False).exists():
             raise serializers.ValidationError('이미 장바구니에 존재하는 반찬입니다')
         return data
@@ -39,6 +37,7 @@ class BasketCreateSerializer(serializers.ModelSerializer):
         return value
 
 
+# 주문 조회시 필요
 class OrderListSerializer(serializers.ModelSerializer):
     cart_items = BasketListSerializer(source='basket_set', many=True)
 
@@ -55,6 +54,7 @@ class OrderListSerializer(serializers.ModelSerializer):
         )
 
 
+# 주문 생성시 필요
 class OrderCreateSerializer(serializers.ModelSerializer):
     user = serializers.HiddenField(
         default=serializers.CurrentUserDefault(),
@@ -80,7 +80,7 @@ class OrderCreateSerializer(serializers.ModelSerializer):
         cart_items = data.get('basket_set')
 
         for cart_item in cart_items:
-            if cart_item.user == data.get('user') and cart_item.order_yn == False:
+            if cart_item.user == data.get('user') and cart_item.order_yn is False:
                 check_total_price += cart_item.item.sale_price * cart_item.amount
             else:
                 raise serializers.ValidationError('현재 사용자에게 없는 장바구니 목록입니다')

@@ -8,6 +8,7 @@ from .models import Item, Category, Comment
 from .new_serializers import CategorySerializer, ItemsSimpleSerializer, ItemDetailSerializer, CommentSerializer
 
 
+# 전체 category 보여주기
 class CategoryListAPIView(generics.ListAPIView):
     queryset = Category.objects.filter(pk__lt=57)
     serializer_class = CategorySerializer

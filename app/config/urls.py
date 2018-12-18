@@ -62,11 +62,12 @@ urlpatterns_api = ([
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include(urlpatterns_api)),
+    # 좀더 restful한 접근 방식을 적용한 새로운 API
     path('new/', include(urlpatterns_new)),
 ]
 
-# if settings.dev.DEBUG:
-#     import debug_toolbar
-#     urlpatterns = [
-#         path('__debug__/', include(debug_toolbar.urls)),
-#     ] + urlpatterns
+if settings.dev.DEBUG:
+    import debug_toolbar
+    urlpatterns = [
+        path('__debug__/', include(debug_toolbar.urls)),
+    ] + urlpatterns

@@ -1,10 +1,9 @@
 from django.contrib.auth import get_user_model
-from rest_framework import generics, permissions, status
+from rest_framework import permissions, status
 from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from items.models import Item
 from .models import LikeItem
 from .new_serializers import SiteAuthTokenSerializer, SocialAuthTokenSerializer, SiteSigunUpSerializer, \
     LikeItemCreateDestroySerializer, LikeItemListSerializer
@@ -68,7 +67,7 @@ class UserView(APIView):
         return Response(UserSerializer(user).data, status=status.HTTP_200_OK)
 
 
-# 찜하기 기능
+# 찜한 목록 조회, 찜하기, 찜한것 삭제
 class LikeItemListCreateDestroyView(APIView):
     permission_classes = (
         permissions.IsAuthenticated,
@@ -91,8 +90,7 @@ class LikeItemListCreateDestroyView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request):
-        like_item = get_object_or_404(
-            LikeItem, item__pk=request.data.get('item'), user=request.user)
+        like_item = get_object_or_404(LikeItem, item__pk=request.data.get('item'), user=request.user)
         like_item.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
