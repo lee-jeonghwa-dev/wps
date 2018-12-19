@@ -144,6 +144,7 @@ class SearchView(APIView):
             'items': ItemsSimpleSerializer(items, many=True).data,
             'page_list': page_list,
             'page': page,
+            'items_count': paginator.count,
         }
 
         return Response(data, status=status.HTTP_200_OK)
