@@ -132,7 +132,6 @@ class CommentView(APIView):
 
 
 class SearchView(APIView):
-
     def get(self, request, format=None):
         if not request.query_params:
             data = {
@@ -178,6 +177,7 @@ class SearchView(APIView):
             'items': ItemsSimpleSerializer(items, many=True).data,
             'page_list': page_list,
             'page': page,
+            'items_count': paginator.count,
         }
 
         return Response(data, status=status.HTTP_200_OK)
