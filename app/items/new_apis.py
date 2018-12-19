@@ -121,6 +121,7 @@ class SearchView(APIView):
                 Item.objects.filter(description__item_type__contains=search_str)
 
         page_list = []
+        items_count = 0
         if is_ios == 'true':
             items = items
         else:
@@ -128,6 +129,7 @@ class SearchView(APIView):
                 items,
                 24,
             )
+            items_count = paginator.count
 
             # page 목록 생성
             for num in paginator.page_range:
@@ -144,7 +146,7 @@ class SearchView(APIView):
             'items': ItemsSimpleSerializer(items, many=True).data,
             'page_list': page_list,
             'page': page,
-            'items_count': paginator.count,
+            'items_count': items_count,
         }
 
         return Response(data, status=status.HTTP_200_OK)
