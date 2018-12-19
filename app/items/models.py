@@ -9,6 +9,7 @@ class Item(models.Model):
     discount_rate = models.FloatField(default=0.0)
     # 크롤링에 필요한 내용
     ga_id = models.CharField(max_length=100, null=True, blank=True, unique=True)
+
     list_thumbnail = models.ImageField(
         upload_to='Item',
     )

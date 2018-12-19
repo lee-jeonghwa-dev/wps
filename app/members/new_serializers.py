@@ -1,3 +1,4 @@
+# 새로운 URL 제공 및 API output 변경을 위해서 새로운  serializer 모델을 구성
 from django.contrib.auth import authenticate, get_user_model
 from rest_framework import serializers
 from rest_framework.authtoken.models import Token

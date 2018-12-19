@@ -4,7 +4,7 @@ from rest_framework.decorators import action
 from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework import generics, permissions, status, mixins
+from rest_framework import generics, permissions, status
 
 from members.permission import IsOwner
 from .models import Basket, Bill
@@ -47,6 +47,9 @@ class BasketRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
         IsOwner,
         permissions.IsAuthenticated,
     )
+    # 현제 PATCH, DELETE 경우 return이 장바구니의 전체 항목을 list형태로 내보내고 있음
+    # serializer에서 return하는 값을 정의할 때 to_representation 에 override해야하는데
+    # 이때는 결과가 dictionary 형태여야 해서 serializer에서 해결할 수 없어서 APIView에서 정해줌
 
     def get_queryset(self):
         return Basket.objects.filter(order_yn=False, user=self.request.user)

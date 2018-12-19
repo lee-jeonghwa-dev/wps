@@ -6,6 +6,7 @@ from items.models import Item
 User = get_user_model()
 
 
+# 장바구니에 들어있는 item
 class Basket(models.Model):
     user = models.ForeignKey(
         User,
@@ -22,12 +23,14 @@ class Basket(models.Model):
         blank=True,
     )
     amount = models.PositiveSmallIntegerField(default=0)
+    # 주문 여부
     order_yn = models.BooleanField(default=False)
 
     def __str__(self):
         return f'{self.user.username}/{self.item.item_name}/{self.amount}'
 
 
+# 주문
 class Bill(models.Model):
     user = models.ForeignKey(
         User,

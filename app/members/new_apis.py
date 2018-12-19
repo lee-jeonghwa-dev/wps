@@ -47,6 +47,7 @@ class SiteAuthTokenAPIView(APIView):
 
 
 # social 로그인 시 token 발행
+# front에서 인증 완료 후 개별 ID만 전송하는 것을 가정함
 class SocialAuthTokenAPIView(APIView):
 
     def post(self, request, format=None):
