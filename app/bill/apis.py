@@ -47,8 +47,9 @@ class ListCreateUpdateBasketItemView(APIView):
 
     def patch(self, request):
         user = request.user
+        cart_item_pk = request.data.get('cart_item_pk', 0)
         try:
-            cart_item = Basket.objects.get(pk=request.data.get('cart_item_pk'), user=user, order_yn=False)
+            cart_item = Basket.objects.get(pk=cart_item_pk, user=user, order_yn=False)
         except Basket.DoesNotExist:
             data = {'error': '존재하지 않는 장바구니 속성입니다'}
             return Response(data, status=status.HTTP_404_NOT_FOUND)
@@ -88,8 +89,9 @@ class ListCreateUpdateBasketItemView(APIView):
 
     def delete(self, request):
         user = request.user
+        cart_item_pk = request.data.get('cart_item_pk', 0)
         try:
-            cart_item = Basket.objects.get(pk=request.data.get('cart_item_pk'), user=user, order_yn=False)
+            cart_item = Basket.objects.get(pk=cart_item_pk, user=user, order_yn=False)
         except Basket.DoesNotExist:
             data = {'error': '존재하지 않는 장바구니 속성입니다'}
             return Response(data, status=status.HTTP_404_NOT_FOUND)
