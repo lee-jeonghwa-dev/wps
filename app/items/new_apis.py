@@ -73,7 +73,7 @@ class ItemDetailAPIView(generics.RetrieveAPIView):
     serializer_class = ItemDetailSerializer
 
 
-class CommentView(APIView):
+class CommentCreateView(APIView):
     def post(self, request):
         nickname = request.data.get('nickname')
 
@@ -95,6 +95,13 @@ class CommentView(APIView):
         comments = Comment.objects.filter(item__pk=request.data.get('item'))
 
         return Response(CommentSerializer(comments, many=True).data, status=status.HTTP_201_CREATED)
+
+
+class CommentListAPIView(generics.ListAPIView):
+    serializer_class = CommentSerializer
+
+    def get_queryset(self):
+        return Comment.objects.filter(item__pk=self.kwargs.get('item_pk'))
 
 
 class SearchView(APIView):
@@ -150,3 +157,4 @@ class SearchView(APIView):
         }
 
         return Response(data, status=status.HTTP_200_OK)
+
