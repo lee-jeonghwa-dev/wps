@@ -73,7 +73,7 @@ class ItemDetailAPIView(generics.RetrieveAPIView):
     serializer_class = ItemDetailSerializer
 
 
-class CommentView(APIView):
+class CommentCreateView(APIView):
     def post(self, request):
         nickname = request.data.get('nickname')
 
@@ -95,6 +95,13 @@ class CommentView(APIView):
         comments = Comment.objects.filter(item__pk=request.data.get('item'))
 
         return Response(CommentSerializer(comments, many=True).data, status=status.HTTP_201_CREATED)
+
+
+class CommentListAPIView(generics.ListAPIView):
+    serializer_class = CommentSerializer
+
+    def get_queryset(self):
+        return Comment.objects.filter(item__pk=self.kwargs.get('item_pk'))
 
 
 class SearchView(APIView):
@@ -121,6 +128,7 @@ class SearchView(APIView):
                 Item.objects.filter(description__item_type__contains=search_str)
 
         page_list = []
+        items_count = 0
         if is_ios == 'true':
             items = items
         else:
@@ -128,6 +136,7 @@ class SearchView(APIView):
                 items,
                 24,
             )
+            items_count = paginator.count
 
             # page 목록 생성
             for num in paginator.page_range:
@@ -144,6 +153,8 @@ class SearchView(APIView):
             'items': ItemsSimpleSerializer(items, many=True).data,
             'page_list': page_list,
             'page': page,
+            'items_count': items_count,
         }
 
         return Response(data, status=status.HTTP_200_OK)
+

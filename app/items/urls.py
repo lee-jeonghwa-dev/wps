@@ -4,7 +4,8 @@ from . import new_apis
 
 
 urlpatterns_comment = ([
-    path('', new_apis.CommentView.as_view()),
+    path('', new_apis.CommentCreateView.as_view()),
+    path('item/<int:item_pk>/', new_apis.CommentListAPIView.as_view()),
 ], 'comment')
 
 urlpatterns_category = ([

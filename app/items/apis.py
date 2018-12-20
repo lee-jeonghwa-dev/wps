@@ -132,7 +132,6 @@ class CommentView(APIView):
 
 
 class SearchView(APIView):
-
     def get(self, request, format=None):
         if not request.query_params:
             data = {
@@ -155,6 +154,7 @@ class SearchView(APIView):
                 Item.objects.filter(description__item_type__contains=search_str).order_by('pk')
 
         page_list = []
+        items_count = 0
         if is_ios == 'true':
             items = items
         else:
@@ -162,6 +162,7 @@ class SearchView(APIView):
                 items,
                 24,
             )
+            items_count = paginator.count
 
             # page 목록 생성
             for num in paginator.page_range:
@@ -178,6 +179,7 @@ class SearchView(APIView):
             'items': ItemsSimpleSerializer(items, many=True).data,
             'page_list': page_list,
             'page': page,
+            'items_count': items_count,
         }
 
         return Response(data, status=status.HTTP_200_OK)
