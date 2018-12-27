@@ -11,3 +11,5 @@
 - 로그 수집 : Centry
 
 - 운영체제 가상화 및 크롤링 라이브러리 : Docker, Beautiful Soup
+
+- CI : git, github
